@@ -1,0 +1,20 @@
+{
+  "java.project.sourcePaths": [
+    "src/main/java"
+  ],
+  "java.project.referencedLibraries": {
+    "include": [
+      "C:\\Users\\Terminal\\.yoko\\api\\api-1.19.3.jar"
+    ],
+    "sources": {
+      "C:\\Users\\Terminal\\.yoko\\api\\api-1.19.3.jar": "C:\\Users\\Terminal\\.yoko\\api\\src-1.19.3.jar"
+    }
+  },
+  "java.configuration.runtimes": [
+    {
+      "name": "JavaSE-17",
+      "path": "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.5.8-hotspot"
+    }
+  ],
+  "java.dependency.packagePresentation": "hierarchical"
+}
