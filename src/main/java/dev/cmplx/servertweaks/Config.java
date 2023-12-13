@@ -19,7 +19,12 @@ public class Config {
 	public static String afkMessage = "&7{player} is now AFK";
 	public static String afkReturnMessage = "&7{player} is no longer AFK";
 
+	public static String discordBotToken = "replaceme";
+	public static String discordChannelId = "replaceme";
+	public static boolean discordIntegration = false;
+	
 	public static boolean hopperFilter = true;
+	public static boolean lockableChests = true;
 	public static boolean chunkloader = true;
 	public static boolean shiftOpenEnder = true;
 	public static boolean shiftOpenCraft = true;

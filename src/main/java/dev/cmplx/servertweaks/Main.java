@@ -8,11 +8,14 @@ import org.bukkit.scoreboard.Criteria;
 import org.bukkit.scoreboard.DisplaySlot;
 
 import dev.cmplx.servertweaks.items.ArmoredElytra;
+import dev.cmplx.servertweaks.items.TimberEnchant;
 import dev.cmplx.servertweaks.tweaks.CauldronConcrete;
 import dev.cmplx.servertweaks.tweaks.CraftingCustomizer;
+import dev.cmplx.servertweaks.tweaks.DiscordIntegration;
 import dev.cmplx.servertweaks.tweaks.DoubleShulker;
 import dev.cmplx.servertweaks.tweaks.HopperFilter;
 import dev.cmplx.servertweaks.tweaks.Loadstone;
+import dev.cmplx.servertweaks.tweaks.LockableChest;
 import dev.cmplx.servertweaks.tweaks.MobGriefing;
 import dev.cmplx.servertweaks.tweaks.MultiplayerSleep;
 import dev.cmplx.servertweaks.tweaks.QuickOpen;
@@ -41,6 +44,9 @@ public class Main extends JavaPlugin {
 
 		Util.getObjectiveSafe("deathCounter", "Tode", Criteria.DEATH_COUNT, DisplaySlot.PLAYER_LIST);
 
+		getCommand("party").setExecutor(new PartyCommand());
+		// getCommand("party").setTabCompleter(party);
+
 		// these are necessary
 		registerWhen(true, MOTDHelper.class);
 		registerWhen(true, PlaytimeTracker.class);
@@ -50,15 +56,26 @@ public class Main extends JavaPlugin {
 		// optional events
 		registerWhen(true,				QuickOpen.class); // handled internally
 		registerWhen(true,				MobGriefing.class); // handled internally
-		registerWhen(true, 						ToolStats.class);
+		registerWhen(true, 			ToolStats.class);
 		registerWhen(Config.chunkloader,		Loadstone.class);
 		registerWhen(Config.multiplayerSleep,	MultiplayerSleep.class);
 		registerWhen(Config.armoredElytra,		ArmoredElytra.class);
+		registerWhen(Config.timberMod,			TimberEnchant.class);
 		registerWhen(Config.timberMod,			Timber.class);
 		registerWhen(Config.hopperFilter,		HopperFilter.class);
 		registerWhen(Config.sneakyMobs,			SneakyMobs.class);
 		registerWhen(Config.rightClickHarvest,	RightClickHarvest.class);
 		registerWhen(Config.doubleShulkerDrop,	DoubleShulker.class);
 		registerWhen(Config.cauldronConcrete,	CauldronConcrete.class);
+		registerWhen(Config.discordIntegration, DiscordIntegration.class);
+		registerWhen(Config.lockableChests, 	LockableChest.class);
 	}
+
+	// @Override
+	// public void onDisable() {
+	// 	var ev = new PluginUnloadEvent();
+	// 	var handlers = ev.getHandlers();
+	// 	handlers.
+	// }
+
 }

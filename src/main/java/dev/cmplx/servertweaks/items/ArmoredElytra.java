@@ -21,6 +21,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.inventory.SmithingRecipe;
+import org.bukkit.inventory.SmithingTransformRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import dev.cmplx.servertweaks.Main;
@@ -32,9 +33,10 @@ public class ArmoredElytra implements Listener {
 		NamespacedKey armoredElytraKey = new NamespacedKey(Main.pluginRef, "armored_elytra");
 
 		/* ARMORED ELYTRA */
-		SmithingRecipe armoredElytra = new SmithingRecipe(
+		SmithingRecipe armoredElytra = new SmithingTransformRecipe(
 				armoredElytraKey,
 				new ItemStack(Material.ELYTRA),
+				new RecipeChoice.MaterialChoice(Material.NETHERITE_UPGRADE_SMITHING_TEMPLATE),
 				new RecipeChoice.MaterialChoice(Material.ELYTRA),
 				new RecipeChoice.MaterialChoice((Material.NETHERITE_INGOT)));
 

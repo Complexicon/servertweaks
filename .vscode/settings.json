@@ -4,10 +4,10 @@
   ],
   "java.project.referencedLibraries": {
     "include": [
-      "C:\\Users\\Terminal\\.yoko\\api\\api-1.19.3.jar"
+      "C:\\Users\\Terminal\\.yoko\\api\\api-1.20.2.jar",
     ],
     "sources": {
-      "C:\\Users\\Terminal\\.yoko\\api\\api-1.19.3.jar": "C:\\Users\\Terminal\\.yoko\\api\\src-1.19.3.jar"
+      "C:\\Users\\Terminal\\.yoko\\api\\api-1.20.2.jar": "C:\\Users\\Terminal\\.yoko\\api\\src-1.20.2.jar"
     }
   },
   "java.configuration.runtimes": [
@@ -16,5 +16,8 @@
       "path": "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.5.8-hotspot"
     }
   ],
-  "java.dependency.packagePresentation": "hierarchical"
+  "java.dependency.packagePresentation": "hierarchical",
+  "java.compile.nullAnalysis.mode": "disabled",
+  "editor.pasteAs.enabled": false,
+  "editor.pasteAs.showPasteSelector": "never"
 }

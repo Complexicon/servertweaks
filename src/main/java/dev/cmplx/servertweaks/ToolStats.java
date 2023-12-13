@@ -1,6 +1,9 @@
 package dev.cmplx.servertweaks;
 
 import java.util.Arrays;
+import java.util.Optional;
+
+import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.EnchantmentTarget;
 import org.bukkit.entity.LivingEntity;
@@ -10,34 +13,37 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 
 public class ToolStats implements Listener {
 	
-	NamespacedKey statsKey = new NamespacedKey(Main.pluginRef, "toolStat");
+	static NamespacedKey statsKey = new NamespacedKey(Main.pluginRef, "toolStat");
 
-	@EventHandler
-	public void onBlockBreak(BlockBreakEvent e) {
-
-		ItemStack curItem = e.getPlayer().getInventory().getItemInMainHand();
-
-		if(!EnchantmentTarget.TOOL.includes(curItem)) return;
-
+	public static void updateStats(ItemStack curItem, String prefix, int toAdd) {
 		ItemMeta itemMeta = curItem.getItemMeta();
-		PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
 
-		if(!dataContainer.has(statsKey, PersistentDataType.INTEGER)) {
-			dataContainer.set(statsKey, PersistentDataType.INTEGER, 0);
+		Integer stats = Util.getPersistentInt(itemMeta, statsKey);
+		if(stats == null) stats = 0;
+		stats += toAdd;
+		Util.setPersistent(itemMeta, statsKey, stats);
+
+		var newKilled = Util.fixColor(prefix + stats);
+		var newLore = Arrays.asList(newKilled);
+		
+		if(itemMeta.hasLore()) {
+			var lore = itemMeta.getLore();
+			var unprefixed = ChatColor.stripColor(Util.fixColor(prefix));
+			Optional<String> toReplace = lore.stream().filter(v -> v.contains(unprefixed)).findFirst();
+			if(toReplace.isPresent()) {
+				newLore = lore;
+				newLore.set(lore.indexOf(toReplace.get()), newKilled);
+			} else {
+				lore.addAll(newLore);
+				newLore = lore;
+			}
 		}
 
-		int blocksBroken = dataContainer.get(statsKey, PersistentDataType.INTEGER);
-		dataContainer.set(statsKey, PersistentDataType.INTEGER, ++blocksBroken);
-
-		itemMeta.setLore(Arrays.asList("Broken Blocks: " + blocksBroken));
-
+		itemMeta.setLore(newLore);
 		curItem.setItemMeta(itemMeta);
-
 	}
 
 	@EventHandler
@@ -55,19 +61,18 @@ public class ToolStats implements Listener {
 
 		if(!(isBow || isCrossbow || isTrident || isSword)) return;
 
-		ItemMeta itemMeta = curItem.getItemMeta();
-		PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
+		updateStats(curItem, "&7Entities Killed: &a", 1);
+	}
 
-		if(!dataContainer.has(statsKey, PersistentDataType.INTEGER)) {
-			dataContainer.set(statsKey, PersistentDataType.INTEGER, 0);
-		}
+	@EventHandler
+	public void onBlockBreak(BlockBreakEvent e) {
 
-		int entitiesKilled = dataContainer.get(statsKey, PersistentDataType.INTEGER);
-		dataContainer.set(statsKey, PersistentDataType.INTEGER, ++entitiesKilled);
+		ItemStack curItem = e.getPlayer().getInventory().getItemInMainHand();
 
-		itemMeta.setLore(Arrays.asList("Entities Killed: " + entitiesKilled));
+		if(!EnchantmentTarget.TOOL.includes(curItem)) return;
 
-		curItem.setItemMeta(itemMeta);
+		updateStats(curItem, "&7Broken Blocks: &a", 1);
+
 	}
 
 }

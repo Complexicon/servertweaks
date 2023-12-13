@@ -2,6 +2,7 @@ package dev.cmplx.servertweaks;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -105,6 +106,10 @@ public class PlaytimeTracker implements Listener {
 			if(afkTeam.hasEntry(name)) {
 				afkTeam.removeEntry(name);
 				Bukkit.broadcastMessage(Util.fixColor(Config.afkReturnMessage.replace("{player}", name)));
+				String party = Util.getPersistentString(e.getPlayer(), new NamespacedKey(Main.pluginRef, "party"));
+				if(party != null) {
+					Util.getTeamSafe(party).addEntry(name);
+				}
 			}
 
 		}

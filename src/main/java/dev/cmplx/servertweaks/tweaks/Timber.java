@@ -14,6 +14,10 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 
+import dev.cmplx.servertweaks.ToolStats;
+import dev.cmplx.servertweaks.Util;
+import dev.cmplx.servertweaks.items.TimberEnchant;
+
 public class Timber implements Listener {
 
 	// private Material[] leafMaterials = {
@@ -58,11 +62,12 @@ public class Timber implements Listener {
 		return newFound;
 	}
 
+	// TODO: Async
 	@EventHandler
 	public void onBlockBreak(final BlockBreakEvent e) {
 		ItemStack tool = e.getPlayer().getInventory().getItemInMainHand();
 		// 
-		if(e.getPlayer().isSneaking() && e.getBlock().getType().toString().endsWith("_LOG") && e.getBlock().isPreferredTool(tool)) {
+		if(e.getBlock().getType().toString().endsWith("_LOG") && Util.getPersistentBool(tool.getItemMeta(), TimberEnchant.timberEntchant)) {
 
 			Damageable axe = (Damageable) tool.getItemMeta();
 			int unbreakingLevel = axe.getEnchantLevel(Enchantment.DURABILITY);
@@ -81,11 +86,14 @@ public class Timber implements Listener {
 			// 	}
 			// }
 
+			int broken = 0;
+
 			for(Block b : blocks) {
 				if(axe.hasDamage() && axe.getDamage() == tool.getType().getMaxDurability()) break;
 
 				//x.breakNaturally();
 				b.breakNaturally(tool);
+				broken++;
 
 				int rng = r.nextInt(100) + 1;
 				switch(unbreakingLevel) {
@@ -103,6 +111,8 @@ public class Timber implements Listener {
 				axe.setDamage(axe.getDamage() + 1);
 				tool.setItemMeta(axe);
 			}
+
+			ToolStats.updateStats(tool, "&7Broken Blocks: &a", broken);
 		}
 	}
 
