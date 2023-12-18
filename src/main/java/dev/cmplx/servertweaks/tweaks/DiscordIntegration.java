@@ -227,17 +227,17 @@ public class DiscordIntegration implements Listener, WebSocket.Listener, Runnabl
 
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onJoin(PlayerJoinEvent e) {
-		postMessageAsync(null, Config.joinMessage.replace("{player}", e.getPlayer().getName()));
+		postMessageAsync(null, e.getJoinMessage());
 	}
 
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onLeave(PlayerQuitEvent e) {
-		postMessageAsync(null, Config.leaveMessage.replace("{player}", e.getPlayer().getName()));
+		postMessageAsync(null, e.getQuitMessage());
 	}
 
 	@EventHandler(priority = EventPriority.HIGH)
 	public void playerDeath(PlayerDeathEvent e) {
-		postMessageAsync(null, Config.deathMessage.replace("{deathMessage}", e.getDeathMessage()));
+		postMessageAsync(null, e.getDeathMessage());
 	}
 
 	@EventHandler(priority = EventPriority.HIGH)

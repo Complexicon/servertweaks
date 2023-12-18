@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
@@ -253,6 +254,54 @@ public class LockableChest implements Listener {
 		var view = new PinView((Player) e.getPlayer(), true, left, right);
 		e.getPlayer().openInventory(view.getInventory());
 
+	}
+
+	// TODO: TEST!
+	void checkDoubleChest(BlockPlaceEvent e) {
+		if(!((((Chest) e.getBlock().getState()).getInventory().getHolder()) instanceof DoubleChest dc)) return;
+		
+		boolean isLeftNewPlaced = dc.getLeftSide().equals((Chest)e.getBlock().getState());
+
+		List<String> allowedPlayers;
+		String currentPin;
+
+		Chest left = (Chest)dc.getLeftSide();
+		Chest right = (Chest)dc.getRightSide();
+
+		if(isLeftNewPlaced) {
+			allowedPlayers = Util.getPersistentStringList(right, chestLock);
+			currentPin = Util.getPersistentString(right, chestPin);
+		} else {
+			allowedPlayers = Util.getPersistentStringList(left, chestLock);
+			currentPin = Util.getPersistentString(left, chestPin);
+		}
+
+		if (allowedPlayers == null)
+			return; // has no password
+
+
+
+		Util.setPersistent(left, chestLock, allowedPlayers);
+		Util.setPersistent(left, chestPin, currentPin);
+		left.update();
+		Util.setPersistent(right, chestLock, allowedPlayers);
+		Util.setPersistent(right, chestPin, currentPin);
+		right.update();
+
+		if (allowedPlayers.contains(e.getPlayer().getUniqueId().toString()))
+			return; // has access
+
+		// Log.debug("created double chest, placed left side" + isLeft);
+		e.getPlayer().sendMessage(Util.fixColor("&cDiese Kiste ist gesperrt und du hast keine Berechtigung!"));
+		e.getBlock().breakNaturally();
+	}
+	
+	@EventHandler
+	public void onBlockPlace(BlockPlaceEvent e) {
+		if(e.getBlockPlaced().getType() != Material.CHEST) return;
+
+		// must check next tick if chest merged to double chest
+		Util.scheduler.runTask(Main.pluginRef, () -> checkDoubleChest(e));
 	}
 
 	@EventHandler

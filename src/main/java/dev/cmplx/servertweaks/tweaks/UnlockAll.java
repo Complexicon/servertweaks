@@ -14,7 +14,7 @@ public class UnlockAll implements Listener {
 	
 	private static Collection<NamespacedKey> discoverable;
 
-	UnlockAll() {
+	public UnlockAll() {
 		discoverable = new ArrayList<>();
 		Bukkit.recipeIterator().forEachRemaining((r) -> {
 			if(r instanceof Keyed) discoverable.add(((Keyed)r).getKey());

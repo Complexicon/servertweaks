@@ -66,7 +66,8 @@ public class Timber implements Listener {
 	@EventHandler
 	public void onBlockBreak(final BlockBreakEvent e) {
 		ItemStack tool = e.getPlayer().getInventory().getItemInMainHand();
-		// 
+		if(tool == null) return;
+		if(!tool.hasItemMeta()) return;
 		if(e.getBlock().getType().toString().endsWith("_LOG") && Util.getPersistentBool(tool.getItemMeta(), TimberEnchant.timberEntchant)) {
 
 			Damageable axe = (Damageable) tool.getItemMeta();

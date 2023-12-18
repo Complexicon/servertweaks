@@ -10,6 +10,7 @@ import org.bukkit.scoreboard.DisplaySlot;
 import dev.cmplx.servertweaks.items.ArmoredElytra;
 import dev.cmplx.servertweaks.items.TimberEnchant;
 import dev.cmplx.servertweaks.tweaks.CauldronConcrete;
+import dev.cmplx.servertweaks.tweaks.ConfigurableVillager;
 import dev.cmplx.servertweaks.tweaks.CraftingCustomizer;
 import dev.cmplx.servertweaks.tweaks.DiscordIntegration;
 import dev.cmplx.servertweaks.tweaks.DoubleShulker;
@@ -22,13 +23,14 @@ import dev.cmplx.servertweaks.tweaks.QuickOpen;
 import dev.cmplx.servertweaks.tweaks.RightClickHarvest;
 import dev.cmplx.servertweaks.tweaks.SneakyMobs;
 import dev.cmplx.servertweaks.tweaks.Timber;
+import dev.cmplx.servertweaks.tweaks.UnlockAll;
 
 public class Main extends JavaPlugin {
 
 	public static Plugin pluginRef;
 	
 	void registerWhen(boolean when, Class<? extends Listener> listener) {
-		try { if(when) Bukkit.getPluginManager().registerEvents(listener.getDeclaredConstructor().newInstance(), this); } catch (Exception e) {}
+		try { if(when) Bukkit.getPluginManager().registerEvents(listener.getDeclaredConstructor().newInstance(), this); } catch (Exception e) { e.printStackTrace(); }
 	}
 
 	@Override
@@ -52,11 +54,13 @@ public class Main extends JavaPlugin {
 		registerWhen(true, PlaytimeTracker.class);
 		registerWhen(true, ChatEvents.class);
 		registerWhen(true, TabListHelper.class);
+		registerWhen(true, ConfigurableVillager.class);
 
 		// optional events
 		registerWhen(true,				QuickOpen.class); // handled internally
 		registerWhen(true,				MobGriefing.class); // handled internally
 		registerWhen(true, 			ToolStats.class);
+		registerWhen(Config.allRecipes,			UnlockAll.class);
 		registerWhen(Config.chunkloader,		Loadstone.class);
 		registerWhen(Config.multiplayerSleep,	MultiplayerSleep.class);
 		registerWhen(Config.armoredElytra,		ArmoredElytra.class);
@@ -70,12 +74,5 @@ public class Main extends JavaPlugin {
 		registerWhen(Config.discordIntegration, DiscordIntegration.class);
 		registerWhen(Config.lockableChests, 	LockableChest.class);
 	}
-
-	// @Override
-	// public void onDisable() {
-	// 	var ev = new PluginUnloadEvent();
-	// 	var handlers = ev.getHandlers();
-	// 	handlers.
-	// }
 
 }

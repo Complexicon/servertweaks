@@ -2,6 +2,7 @@ package dev.cmplx.servertweaks;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -10,6 +11,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.Criteria;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -50,6 +52,13 @@ public class PlaytimeTracker implements Listener {
 
 	}
 
+	@EventHandler
+	public void onSpectate(PlayerTeleportEvent e) {
+		if (e.getCause() != PlayerTeleportEvent.TeleportCause.SPECTATE) return;
+		e.setCancelled(true);
+		e.getPlayer().setSpectatorTarget(null);
+	}
+
 	private static void handlePlaytime(Player p) {
 		
 		int afkTime = afkTimer.getScore(p.getName()).getScore();
@@ -57,6 +66,7 @@ public class PlaytimeTracker implements Listener {
 		if(afkTime == Config.afkTime - 1) {
 			Bukkit.broadcastMessage(Util.fixColor(Config.afkMessage.replace("{player}", p.getName())));
 			afkTeam.addEntry(p.getName());
+			p.setGameMode(GameMode.SPECTATOR);
 		}
 
 		if(afkTime <= Config.afkTime) Util.modifyScore(afkTimer.getScore(p.getName()), old -> old + 1);
@@ -105,6 +115,7 @@ public class PlaytimeTracker implements Listener {
 
 			if(afkTeam.hasEntry(name)) {
 				afkTeam.removeEntry(name);
+				e.getPlayer().setGameMode(GameMode.SURVIVAL);
 				Bukkit.broadcastMessage(Util.fixColor(Config.afkReturnMessage.replace("{player}", name)));
 				String party = Util.getPersistentString(e.getPlayer(), new NamespacedKey(Main.pluginRef, "party"));
 				if(party != null) {
