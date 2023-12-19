@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
+import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.block.DoubleChest;
 import org.bukkit.entity.Player;
@@ -40,8 +41,7 @@ public class LockableChest implements Listener {
 		String currentPin = "";
 		boolean isSetup = false;
 
-		Chest left;
-		Chest right;
+		Block chest;
 
 		Player viewingPlayer;
 
@@ -80,12 +80,11 @@ public class LockableChest implements Listener {
 			currentPin = "";
 		}
 
-		public PinView(Player displayFor, boolean isSetup, Chest left, Chest right) {
+		public PinView(Player displayFor, boolean isSetup, Block chest) {
 			pinView = Bukkit.createInventory(this, 9 * 6, "Pinfeld" + (isSetup ? " - Einrichtung" : ""));
 			this.isSetup = isSetup;
-			this.left = left;
-			this.right = right;
-			targetPin = Util.getPersistentString(left, chestPin);
+			this.chest = chest;
+			targetPin = Util.getPersistentString(((Chest) chest.getState()), chestPin);
 			viewingPlayer = displayFor;
 			var grayPane = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
 			for (int i = 0; i < pinView.getSize(); i++) {
@@ -121,6 +120,59 @@ public class LockableChest implements Listener {
 
 		final List<String> num = Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
 
+		void updatePin(String pin) {
+
+			var holder = ((Chest) chest.getState()).getInventory().getHolder();
+
+			Chest left;
+			Chest right = null;
+
+			if (holder instanceof Chest) {
+				left = (Chest) holder;
+			} else if (holder instanceof DoubleChest) {
+				DoubleChest c = (DoubleChest) holder;
+				left = (Chest) c.getLeftSide();
+				right = (Chest) c.getRightSide();
+			} else {
+				return; // ????
+			}
+
+			Util.setPersistent(left, chestLock, Arrays.asList(viewingPlayer.getUniqueId().toString()));
+			Util.setPersistent(left, chestPin, currentPin);
+			left.update();
+			if (right != null) {
+				Util.setPersistent(right, chestLock, Arrays.asList(viewingPlayer.getUniqueId().toString()));
+				Util.setPersistent(right, chestPin, currentPin);
+				right.update();
+			}
+		}
+
+		void updateAllowed(List<String> allowed) {
+
+			var holder = ((Chest) chest.getState()).getInventory().getHolder();
+
+			Chest left;
+			Chest right = null;
+
+			if (holder instanceof Chest) {
+				left = (Chest) holder;
+			} else if (holder instanceof DoubleChest) {
+				DoubleChest c = (DoubleChest) holder;
+				left = (Chest) c.getLeftSide();
+				right = (Chest) c.getRightSide();
+			} else {
+				return; // ok
+			}
+
+			Util.setPersistent(left, chestLock, allowed);
+			left.update();
+			if (right != null) {
+				Util.setPersistent(right, chestLock, allowed);
+				right.update();
+			}
+
+		}
+
 		public void click(ItemStack clicked) {
 
 			if (isSetup && clicked.isSimilar(delete)) {
@@ -144,16 +196,10 @@ public class LockableChest implements Listener {
 					viewingPlayer.playSound(viewingPlayer.getLocation(), Sound.ENTITY_VILLAGER_CELEBRATE, 1, 1);
 					viewingPlayer.sendMessage(Util.fixColor("&aPin erfolgreich gesetzt"));
 
-					Util.setPersistent(left, chestLock, Arrays.asList(viewingPlayer.getUniqueId().toString()));
-					Util.setPersistent(left, chestPin, currentPin);
-					left.update();
-					if (right != null) {
-						Util.setPersistent(right, chestLock, Arrays.asList(viewingPlayer.getUniqueId().toString()));
-						Util.setPersistent(right, chestPin, currentPin);
-						right.update();
-					}
+					updatePin(currentPin);
+					updateAllowed(Arrays.asList(viewingPlayer.getUniqueId().toString()));
 
-					viewingPlayer.openInventory(left.getInventory());
+					viewingPlayer.openInventory(((Chest) chest.getState()).getInventory());
 
 					return;
 				}
@@ -177,17 +223,12 @@ public class LockableChest implements Listener {
 					viewingPlayer.playSound(viewingPlayer.getLocation(), Sound.ENTITY_VILLAGER_CELEBRATE, 1, 1);
 					viewingPlayer.sendMessage(Util.fixColor("&aDu hast nun zugriff auf diese Kiste!"));
 
-					var allowed = new ArrayList<String>(Util.getPersistentStringList(left, chestLock));
+					var allowed = new ArrayList<String>(Util.getPersistentStringList(((Chest)chest.getState()), chestLock));
 					allowed.add(viewingPlayer.getUniqueId().toString());
 
-					Util.setPersistent(left, chestLock, allowed);
-					left.update();
-					if (right != null) {
-						Util.setPersistent(right, chestLock, allowed);
-						right.update();
-					}
+					updateAllowed(allowed);
 
-					viewingPlayer.openInventory(left.getInventory());
+					viewingPlayer.openInventory(((Chest)chest.getState()).getInventory());
 
 				} else {
 					setItem(6, 0, new ItemStack(Material.RED_WOOL));
@@ -251,7 +292,7 @@ public class LockableChest implements Listener {
 
 
 		e.setCancelled(true);
-		var view = new PinView((Player) e.getPlayer(), true, left, right);
+		var view = new PinView((Player) e.getPlayer(), true, e.getClickedBlock());
 		e.getPlayer().openInventory(view.getInventory());
 
 	}
@@ -358,7 +399,7 @@ public class LockableChest implements Listener {
 			return; // has access
 
 		e.setCancelled(true);
-		var view = new PinView((Player) e.getPlayer(), false, left, right);
+		var view = new PinView((Player) e.getPlayer(), false, left.getBlock());
 		e.getPlayer().openInventory(view.getInventory());
 
 	}
