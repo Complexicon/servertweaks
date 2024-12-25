@@ -14,9 +14,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryMoveItemEvent;
-import org.bukkit.event.inventory.InventoryType.SlotType;
-import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -80,7 +77,7 @@ public class ConfigurableVillager implements Listener {
 
 	@EventHandler
 	public void onInventoryMove(InventoryClickEvent e) {
-		if(!(e.getInventory().getHolder() instanceof VillagerConfig c)) return;
+		if(!(e.getInventory().getHolder() instanceof VillagerConfig)) return;
 		e.setCancelled(true);
 		if(e.getAction() != InventoryAction.HOTBAR_SWAP) return;
 

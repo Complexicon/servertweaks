@@ -2,17 +2,29 @@ package dev.cmplx.servertweaks.items;
 
 import java.util.Arrays;
 
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
+import org.bukkit.inventory.ItemStack;
 
+import dev.cmplx.servertweaks.DebugItemsCommand;
 import dev.cmplx.servertweaks.Main;
 import dev.cmplx.servertweaks.Util;
 
 public class TimberEnchant implements Listener {
 
 	public static NamespacedKey timberEntchant = new NamespacedKey(Main.pluginRef, "timber");
+
+	static {
+		ItemStack timberBook = new ItemStack(Material.ENCHANTED_BOOK);
+		var meta = timberBook.getItemMeta();
+		meta.setLore(Arrays.asList("Timber Verzauberung"));
+		Util.setPersistent(meta, timberEntchant, true);
+		timberBook.setItemMeta(meta);
+		DebugItemsCommand.DebugItems.add(timberBook);
+	}
 
 	@EventHandler
 	public void onAnvilCraft(PrepareAnvilEvent e) {

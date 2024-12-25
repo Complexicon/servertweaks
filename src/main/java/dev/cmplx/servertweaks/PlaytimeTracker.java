@@ -1,5 +1,7 @@
 package dev.cmplx.servertweaks;
 
+import java.util.Map;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -22,6 +24,7 @@ public class PlaytimeTracker implements Listener {
 
     private static Objective playtimeSec;
     private static Objective playtimeMin;
+    private static Objective playtimeDisplay;
 	private static Objective playtimeWeek;
 	private static Objective afkTimer;
 	private static Team afkTeam;
@@ -37,8 +40,39 @@ public class PlaytimeTracker implements Listener {
 			Cron.add(new Cron.Job(Config.playtimeResetCronjob, () -> clearWeekPlaytime()));
 		}
 
+		var globalScoreboard = Main.pluginRef.getServer().getScoreboardManager().getMainScoreboard();
+
+		Cron.add(new Cron.Job("* * * * *", () -> {
+			globalScoreboard
+				.getEntries()
+				.stream()
+				.filter(v -> playtimeDisplay.getScore(v).isScoreSet())
+				.forEach(v -> globalScoreboard.resetScores(v));
+
+			var topFive = globalScoreboard
+				.getEntries()
+				.stream()
+				.filter(v -> playtimeMin.getScore(v).isScoreSet())
+				.map(v -> Map.entry(v, playtimeMin.getScore(v).getScore()))
+				.sorted((v1, v2) -> v2.getValue() - v1.getValue())
+				.limit(5)
+				.toList();
+
+			int spot = -1;
+			for (var player : topFive) {
+				var mins = player.getValue();
+				var hours = mins / 60;
+				mins = mins % 60;
+				
+				playtimeDisplay.getScore(Util.fixColor(String.format("%s &7(%dh%dm)", player.getKey(), hours, mins))).setScore(spot--);
+			}
+
+		}));
+
+		playtimeDisplay = Util.getObjectiveSafe("playtimeDisplay", "§6Spielzeit - Top 5", Criteria.DUMMY, DisplaySlot.SIDEBAR);
+
 		playtimeSec = Util.getObjectiveSafe("playtimeSec");
-		playtimeMin = Util.getObjectiveSafe("playtimeMin", "§6Spielzeit (min)", Criteria.DUMMY, DisplaySlot.SIDEBAR);
+		playtimeMin = Util.getObjectiveSafe("playtimeMin");
 		playtimeWeek = Util.getObjectiveSafe("playtimeWeek");
 		afkTimer = Util.getObjectiveSafe("afkTimer");
 		afkTeam = Util.getTeamSafe("afkPlayers");
@@ -66,6 +100,7 @@ public class PlaytimeTracker implements Listener {
 		if(afkTime == Config.afkTime - 1) {
 			Bukkit.broadcastMessage(Util.fixColor(Config.afkMessage.replace("{player}", p.getName())));
 			afkTeam.addEntry(p.getName());
+			Util.setMetadata(p, "afkGamemode", p.getGameMode());
 			p.setGameMode(GameMode.SPECTATOR);
 		}
 
@@ -115,7 +150,10 @@ public class PlaytimeTracker implements Listener {
 
 			if(afkTeam.hasEntry(name)) {
 				afkTeam.removeEntry(name);
-				e.getPlayer().setGameMode(GameMode.SURVIVAL);
+
+				var oldGamemode = Util.getMetadata(e.getPlayer(), "afkGamemode", GameMode.class);
+				e.getPlayer().setGameMode(oldGamemode != null ? oldGamemode : GameMode.SURVIVAL);
+
 				Bukkit.broadcastMessage(Util.fixColor(Config.afkReturnMessage.replace("{player}", name)));
 				String party = Util.getPersistentString(e.getPlayer(), new NamespacedKey(Main.pluginRef, "party"));
 				if(party != null) {

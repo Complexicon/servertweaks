@@ -272,14 +272,12 @@ public class LockableChest implements Listener {
 		var holder = ((Chest) e.getClickedBlock().getState()).getInventory().getHolder();
 
 		Chest left;
-		Chest right = null;
-
+		
 		if (holder instanceof Chest) {
 			left = (Chest) holder;
 		} else if (holder instanceof DoubleChest) {
 			DoubleChest c = (DoubleChest) holder;
 			left = (Chest) c.getLeftSide();
-			right = (Chest) c.getRightSide();
 		} else {
 			return; // ????
 		}
@@ -379,14 +377,12 @@ public class LockableChest implements Listener {
 
 		var holder = e.getInventory().getHolder();
 		Chest left;
-		Chest right = null;
 
 		if (holder instanceof Chest) {
 			left = (Chest) holder;
 		} else if (holder instanceof DoubleChest) {
 			DoubleChest c = (DoubleChest) holder;
 			left = (Chest) c.getLeftSide();
-			right = (Chest) c.getRightSide();
 		} else {
 			return; // ????
 		}

@@ -5,3 +5,5 @@ version: 1.2-Stable
 commands:
   party:
     description: "Manage Parties"
+  debugitems:
+    description: "Get inventory full of debug items"

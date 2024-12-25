@@ -1,5 +1,11 @@
 package dev.cmplx.servertweaks;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Optional;
 import java.util.UUID;
@@ -183,6 +189,24 @@ public class Util {
 		holder.getPersistentDataContainer().set(key, PersistentDataType.BOOLEAN, value);
 	}
 
+	public static void setPersistentSerialized(PersistentDataHolder holder, NamespacedKey key, Serializable value) throws IOException{
+		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+		new ObjectOutputStream(bytes).writeObject(value);
+		holder.getPersistentDataContainer().set(key, PersistentDataType.BYTE_ARRAY, bytes.toByteArray());
+	}
+
+	public static <T extends Serializable> T getPersistentSerializable(PersistentDataHolder holder, NamespacedKey key, Class<T> clazz) {
+		byte[] bytes = holder.getPersistentDataContainer().get(key, PersistentDataType.BYTE_ARRAY);
+		if(bytes == null) return null;
+		try {
+			Object obj = new ObjectInputStream(new ByteArrayInputStream(bytes)).readObject();
+			if (clazz.isInstance(obj))
+				return clazz.cast(obj);
+		} catch (Exception ex) {}
+
+		return null;
+	}
+
 	public static Integer getPersistentInt(PersistentDataHolder holder, NamespacedKey key) {
 		return holder.getPersistentDataContainer().get(key, PersistentDataType.INTEGER);
 	}
@@ -232,15 +256,16 @@ public class Util {
 	};
 
 	private static class ReflectionHelper {
-		private static final Map<Class<?>, Class<?>> primitiveWrapperMap =
-		Map.of(boolean.class, Boolean.class,
-				byte.class, Byte.class,
-				char.class, Character.class,
-				double.class, Double.class,
-				float.class, Float.class,
-				int.class, Integer.class,
-				long.class, Long.class,
-				short.class, Short.class);
+		private static final Map<Class<?>, Class<?>> primitiveWrapperMap = Map.of(
+			boolean.class, Boolean.class,
+			byte.class, Byte.class,
+			char.class, Character.class,
+			double.class, Double.class,
+			float.class, Float.class,
+			int.class, Integer.class,
+			long.class, Long.class,
+			short.class, Short.class
+		);
 
 		private static boolean isPrimitiveWrapperOf(Class<?> targetClass, Class<?> primitive) {
 			if (!primitive.isPrimitive()) {

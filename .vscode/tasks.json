@@ -1,22 +1,25 @@
 {
-  "version": "2.0.0",
-  "tasks": [
-    {
-      "label": "build and run",
-      "type": "shell",
-      "command": "\u0022F:\\Userdata\\Desktop\\Projekte\\servertweaks-1.20\\Yoko.exe\u0022 test",
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "custom",
-        "pattern": {
-          "regexp": "__________"
-        },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "^building plugin\\.\\.\\.$",
-          "endsPattern": "^Listening for transport dt_socket at address: 5005$"
-        }
-      }
-    }
-  ]
+	"tasks": [
+		{
+			"args": [
+				"test"
+			],
+			"command": "G:\\Path Folder\\yoko.exe",
+			"isBackground": true,
+			"label": "build and run",
+			"problemMatcher": {
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": "^building plugin\\.\\.\\.$",
+					"endsPattern": "^Listening for transport dt_socket at address: 5005$"
+				},
+				"owner": "custom",
+				"pattern": {
+					"regexp": "__________"
+				}
+			},
+			"type": "shell"
+		}
+	],
+	"version": "2.0.0"
 }

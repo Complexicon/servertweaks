@@ -9,11 +9,13 @@ import org.bukkit.scoreboard.DisplaySlot;
 
 import dev.cmplx.servertweaks.items.ArmoredElytra;
 import dev.cmplx.servertweaks.items.TimberEnchant;
+import dev.cmplx.servertweaks.tweaks.AnvilRename;
 import dev.cmplx.servertweaks.tweaks.CauldronConcrete;
 import dev.cmplx.servertweaks.tweaks.ConfigurableVillager;
 import dev.cmplx.servertweaks.tweaks.CraftingCustomizer;
 import dev.cmplx.servertweaks.tweaks.DiscordIntegration;
 import dev.cmplx.servertweaks.tweaks.DoubleShulker;
+import dev.cmplx.servertweaks.tweaks.DualDoor;
 import dev.cmplx.servertweaks.tweaks.HopperFilter;
 import dev.cmplx.servertweaks.tweaks.Loadstone;
 import dev.cmplx.servertweaks.tweaks.LockableChest;
@@ -22,6 +24,7 @@ import dev.cmplx.servertweaks.tweaks.MultiplayerSleep;
 import dev.cmplx.servertweaks.tweaks.QuickOpen;
 import dev.cmplx.servertweaks.tweaks.RightClickHarvest;
 import dev.cmplx.servertweaks.tweaks.SneakyMobs;
+import dev.cmplx.servertweaks.tweaks.TeleportAnchor;
 import dev.cmplx.servertweaks.tweaks.Timber;
 import dev.cmplx.servertweaks.tweaks.UnlockAll;
 
@@ -30,7 +33,14 @@ public class Main extends JavaPlugin {
 	public static Plugin pluginRef;
 	
 	void registerWhen(boolean when, Class<? extends Listener> listener) {
-		try { if(when) Bukkit.getPluginManager().registerEvents(listener.getDeclaredConstructor().newInstance(), this); } catch (Exception e) { e.printStackTrace(); }
+		try {
+			if(when) {
+				Log.info("Enabling Tweak: " + listener.getSimpleName());
+				Bukkit.getPluginManager().registerEvents(listener.getDeclaredConstructor().newInstance(), this);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -47,6 +57,7 @@ public class Main extends JavaPlugin {
 		Util.getObjectiveSafe("deathCounter", "Tode", Criteria.DEATH_COUNT, DisplaySlot.PLAYER_LIST);
 
 		getCommand("party").setExecutor(new PartyCommand());
+		getCommand("debugitems").setExecutor(new DebugItemsCommand());
 		// getCommand("party").setTabCompleter(party);
 
 		// these are necessary
@@ -54,7 +65,11 @@ public class Main extends JavaPlugin {
 		registerWhen(true, PlaytimeTracker.class);
 		registerWhen(true, ChatEvents.class);
 		registerWhen(true, TabListHelper.class);
-		registerWhen(true, ConfigurableVillager.class);
+
+		// DEV
+		registerWhen(false, ConfigurableVillager.class);
+		registerWhen(true, DualDoor.class);
+		registerWhen(true, TeleportAnchor.class);
 
 		// optional events
 		registerWhen(true,				QuickOpen.class); // handled internally
@@ -71,8 +86,11 @@ public class Main extends JavaPlugin {
 		registerWhen(Config.rightClickHarvest,	RightClickHarvest.class);
 		registerWhen(Config.doubleShulkerDrop,	DoubleShulker.class);
 		registerWhen(Config.cauldronConcrete,	CauldronConcrete.class);
-		registerWhen(Config.discordIntegration, DiscordIntegration.class);
+		registerWhen(Config.discordIntegration,	DiscordIntegration.class);
 		registerWhen(Config.lockableChests, 	LockableChest.class);
+		registerWhen(Config.transformAnvilColorCodes, AnvilRename.class);
+
+		Log.info("Startup Complete");
 	}
 
 }
