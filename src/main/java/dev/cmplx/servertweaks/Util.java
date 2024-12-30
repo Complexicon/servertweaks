@@ -255,6 +255,13 @@ public class Util {
 		createHead("a473ea351f41e9957f914e3b90f74e9867838b3339d42513ca25ed0f45bc60cb", "9"),
 	};
 
+	public final static Map<String, ItemStack> symbols = Map.ofEntries(
+		Map.entry("ARROW_RIGHT", createHead("aee0f82fb33f6cfa5169b9f5eafe4dc1c73618c9783b131adada411d8f605505", "Forward")),
+		Map.entry("ARROW_LEFT", createHead("e35e42fc7060c223acc965f7c5996f272644af40a4723a372f5903f8e9f188e7", "Back"))
+		// Map.entry("", createHead("", "")),
+		// Map.entry("", createHead("", ""))
+	);
+
 	private static class ReflectionHelper {
 		private static final Map<Class<?>, Class<?>> primitiveWrapperMap = Map.of(
 			boolean.class, Boolean.class,

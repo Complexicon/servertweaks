@@ -9,9 +9,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.inventory.ItemStack;
 
-import dev.cmplx.servertweaks.DebugItemsCommand;
 import dev.cmplx.servertweaks.Main;
 import dev.cmplx.servertweaks.Util;
+import dev.cmplx.servertweaks.commands.DebugItemsCommand;
 
 public class TimberEnchant implements Listener {
 

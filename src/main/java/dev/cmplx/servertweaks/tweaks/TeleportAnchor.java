@@ -1,10 +1,10 @@
 package dev.cmplx.servertweaks.tweaks;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.function.Consumer;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -22,18 +22,16 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
-import dev.cmplx.servertweaks.DebugItemsCommand;
+import dev.cmplx.servertweaks.InventoryGUI;
 import dev.cmplx.servertweaks.Log;
 import dev.cmplx.servertweaks.Main;
 import dev.cmplx.servertweaks.Util;
+import dev.cmplx.servertweaks.commands.DebugItemsCommand;
 import dev.cmplx.servertweaks.serializable.TeleportAnchorContainer;
 import dev.cmplx.servertweaks.serializable.TeleportAnchorContainer.TeleportAnchorInfo;
 
@@ -73,62 +71,98 @@ public class TeleportAnchor implements Listener {
 		}
 	}
 
-	class WaypointChooser implements InventoryHolder {
+	class WaypointGUI extends InventoryGUI {
 
-		Inventory inv;
-		List<Entry<UUID, TeleportAnchorInfo>> anchors;
-		
-		public WaypointChooser(UUID opener) {
+		public WaypointGUI(UUID origin) {
+			super("Waypoints");
+			var anchors = getContainer().anchors.entrySet().stream().toList();
 
-			inv = Bukkit.createInventory(this, 27, "Waypoints");
+			for (Entry<UUID,TeleportAnchorInfo> entry : anchors) {
+				var anchorID = entry.getKey();
+				var info = entry.getValue();
 
-			anchors = getContainer().anchors.entrySet().stream().toList();
-
-			for (int i = 0; i < anchors.size(); i++) {
-				var anchorInfo = anchors.get(i);
-
-				var pearl = new ItemStack(anchorInfo.getKey().equals(opener) ? Material.ENDER_EYE : Material.ENDER_PEARL);
+				var pearl = new ItemStack(anchorID.equals(origin) ? Material.ENDER_EYE : Material.ENDER_PEARL);
 				var meta = pearl.getItemMeta();
 
-				var info = anchorInfo.getValue();
-
-				meta.setDisplayName(info.name + (anchorInfo.getKey().equals(opener) ? Util.fixColor("&b (Currently Here)") : ""));
+				meta.setDisplayName(info.name + (anchorID.equals(origin) ? Util.fixColor("&b (Currently Here)") : ""));
 				meta.setLore(Arrays.asList(Bukkit.getWorld(info.dim).getName(), "X: " + info.x + " Y: " + info.y + " Z: " + info.z));
 
 				pearl.setItemMeta(meta);
 
-				inv.setItem(i, pearl);
+				try {
+					addItem(pearl, e -> {
+						var player = (Player) e.getWhoClicked();
+
+						player.closeInventory();
+						player.teleport(new Location(Bukkit.getWorld(info.dim), info.x, info.y, info.z));
+						player.playSound(player, Sound.BLOCK_PORTAL_TRAVEL, 0.5f, 2);
+						player.spawnParticle(Particle.TOTEM, player.getLocation(), 100, 1,1,1);
+					});
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
-		}
 
-		public void onClick(InventoryClickEvent e) {
-			if (e.getCurrentItem() == null) return;
-
-			var anchorInfo = anchors.get(e.getSlot());
-			var info = anchorInfo.getValue();
-			
-			var player = (Player) e.getWhoClicked();
-
-			player.closeInventory();
-			player.teleport(new Location(Bukkit.getWorld(info.dim), info.x, info.y, info.z));
-			player.playSound(player, Sound.BLOCK_PORTAL_TRAVEL, 0.5f, 2);
-			player.spawnParticle(Particle.TOTEM, player.getLocation(), 100, 1,1,1);
-		}
-
-		@Override
-		public Inventory getInventory() {
-			return inv;
 		}
 		
 	}
 
-	@EventHandler
-	public void onTPInvInteract(InventoryClickEvent e) {
-		if (e.getInventory().getHolder() instanceof WaypointChooser w) {
-			e.setCancelled(true);
-			w.onClick(e);
-		}
-	}
+	// class WaypointChooser implements InventoryHolder {
+
+	// 	Inventory inv;
+	// 	List<Entry<UUID, TeleportAnchorInfo>> anchors;
+		
+	// 	public WaypointChooser(UUID opener) {
+
+	// 		inv = Bukkit.createInventory(this, 27, "Waypoints");
+
+	// 		anchors = getContainer().anchors.entrySet().stream().toList();
+
+	// 		for (int i = 0; i < anchors.size(); i++) {
+	// 			var anchorInfo = anchors.get(i);
+
+	// 			var pearl = new ItemStack(anchorInfo.getKey().equals(opener) ? Material.ENDER_EYE : Material.ENDER_PEARL);
+	// 			var meta = pearl.getItemMeta();
+
+	// 			var info = anchorInfo.getValue();
+
+	// 			meta.setDisplayName(info.name + (anchorInfo.getKey().equals(opener) ? Util.fixColor("&b (Currently Here)") : ""));
+	// 			meta.setLore(Arrays.asList(Bukkit.getWorld(info.dim).getName(), "X: " + info.x + " Y: " + info.y + " Z: " + info.z));
+
+	// 			pearl.setItemMeta(meta);
+
+	// 			inv.setItem(i, pearl);
+	// 		}
+	// 	}
+
+	// 	public void onClick(InventoryClickEvent e) {
+	// 		if (e.getCurrentItem() == null) return;
+
+	// 		var anchorInfo = anchors.get(e.getSlot());
+	// 		var info = anchorInfo.getValue();
+			
+	// 		var player = (Player) e.getWhoClicked();
+
+	// 		player.closeInventory();
+	// 		player.teleport(new Location(Bukkit.getWorld(info.dim), info.x, info.y, info.z));
+	// 		player.playSound(player, Sound.BLOCK_PORTAL_TRAVEL, 0.5f, 2);
+	// 		player.spawnParticle(Particle.TOTEM, player.getLocation(), 100, 1,1,1);
+	// 	}
+
+	// 	@Override
+	// 	public Inventory getInventory() {
+	// 		return inv;
+	// 	}
+		
+	// }
+
+	// @EventHandler
+	// public void onTPInvInteract(InventoryClickEvent e) {
+	// 	if (e.getInventory().getHolder() instanceof WaypointChooser w) {
+	// 		e.setCancelled(true);
+	// 		w.onClick(e);
+	// 	}
+	// }
 
 	private boolean isTeleportAnchor(Block b) {
 		if (!(b.getState() instanceof Lectern)) return false;
@@ -249,7 +283,7 @@ public class TeleportAnchor implements Listener {
 		UUID id = UUID.fromString(Util.getPersistentString(l, teleportAnchor));
 
 		e.setCancelled(true);
-		e.getPlayer().openInventory(new WaypointChooser(id).getInventory());
+		e.getPlayer().openInventory(new WaypointGUI(id).getInventory());
 	}
 
 	@EventHandler

@@ -7,3 +7,5 @@ commands:
     description: "Manage Parties"
   debugitems:
     description: "Get inventory full of debug items"
+  testcmd:
+    description: ""

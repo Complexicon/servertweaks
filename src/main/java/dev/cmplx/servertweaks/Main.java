@@ -7,6 +7,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.Criteria;
 import org.bukkit.scoreboard.DisplaySlot;
 
+import dev.cmplx.servertweaks.commands.DebugItemsCommand;
+import dev.cmplx.servertweaks.commands.PartyCommand;
+import dev.cmplx.servertweaks.commands.TestCommand;
 import dev.cmplx.servertweaks.items.ArmoredElytra;
 import dev.cmplx.servertweaks.items.TimberEnchant;
 import dev.cmplx.servertweaks.tweaks.AnvilRename;
@@ -53,11 +56,13 @@ public class Main extends JavaPlugin {
 
 		PlaytimeTracker.init();
 		CraftingCustomizer.init();
+		InventoryGUI.init();
 
 		Util.getObjectiveSafe("deathCounter", "Tode", Criteria.DEATH_COUNT, DisplaySlot.PLAYER_LIST);
 
 		getCommand("party").setExecutor(new PartyCommand());
 		getCommand("debugitems").setExecutor(new DebugItemsCommand());
+		getCommand("testcmd").setExecutor(new TestCommand());
 		// getCommand("party").setTabCompleter(party);
 
 		// these are necessary
