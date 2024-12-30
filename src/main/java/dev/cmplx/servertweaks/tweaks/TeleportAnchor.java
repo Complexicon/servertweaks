@@ -216,12 +216,10 @@ public class TeleportAnchor implements Listener {
 	public void onCreateTeleportAnchor(PlayerInteractEvent e) throws Exception {
 
 		if (e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
-		if (!(e.getClickedBlock().getState() instanceof Lectern)) return;
+		if (!(e.getClickedBlock().getState() instanceof Lectern lectern)) return;
 		if (e.getItem() == null) return;
 		if (e.getItem().getType() != Material.ENCHANTED_BOOK) return;
 		// if (!Util.getPersistentBool(e.getItem().getItemMeta(), teleportAnchor)) return;
-
-		Lectern lectern = (Lectern) e.getClickedBlock().getState();
 
 		if (lectern.getInventory().getItem(0) != null) return; // cant create on lectern that has book present
 

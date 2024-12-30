@@ -11,6 +11,7 @@ import dev.cmplx.servertweaks.commands.DebugItemsCommand;
 import dev.cmplx.servertweaks.commands.PartyCommand;
 import dev.cmplx.servertweaks.commands.TestCommand;
 import dev.cmplx.servertweaks.items.ArmoredElytra;
+import dev.cmplx.servertweaks.items.GPSCompass;
 import dev.cmplx.servertweaks.items.TimberEnchant;
 import dev.cmplx.servertweaks.tweaks.AnvilRename;
 import dev.cmplx.servertweaks.tweaks.CauldronConcrete;
@@ -74,6 +75,7 @@ public class Main extends JavaPlugin {
 		// DEV
 		registerWhen(false, ConfigurableVillager.class);
 		registerWhen(true, DualDoor.class);
+		registerWhen(true, GPSCompass.class);
 		registerWhen(true, TeleportAnchor.class);
 
 		// optional events
