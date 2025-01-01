@@ -7,11 +7,24 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.net.URI;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.IntFunction;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Server;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.metadata.Metadatable;
@@ -25,20 +38,6 @@ import org.bukkit.scoreboard.RenderType;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-
-import java.lang.reflect.Modifier;
-import java.net.URI;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
 
 public class Util {
 
@@ -183,6 +182,28 @@ public class Util {
 
 	public static void setPersistent(PersistentDataHolder holder, NamespacedKey key, int value) {
 		holder.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, value);
+	}
+
+	public static String toColorCode(DyeColor c) {
+		switch (c) {
+			case BLACK:		return "&" + ChatColor.BLACK.getChar();
+			case WHITE:		return "&" + ChatColor.WHITE.getChar();
+			case BLUE: 		return "&" + ChatColor.DARK_BLUE.getChar();
+			case BROWN:		return "&" + ChatColor.GOLD.getChar();
+			case CYAN:		return "&" + ChatColor.AQUA.getChar();
+			case GRAY:		return "&" + ChatColor.DARK_GRAY.getChar();
+			case GREEN:		return "&" + ChatColor.DARK_GREEN.getChar();
+			case LIGHT_BLUE:return "&" + ChatColor.BLUE.getChar();
+			case LIGHT_GRAY:return "&" + ChatColor.GRAY.getChar();
+			case LIME:		return "&" + ChatColor.GREEN.getChar();
+			case MAGENTA:	return "&" + ChatColor.RED.getChar();
+			case ORANGE:	return "&" + ChatColor.GOLD.getChar();
+			case PINK:		return "&" + ChatColor.LIGHT_PURPLE.getChar();
+			case PURPLE:	return "&" + ChatColor.DARK_PURPLE.getChar();
+			case RED:		return "&" + ChatColor.DARK_RED.getChar();
+			case YELLOW:	return "&" + ChatColor.YELLOW.getChar();
+			default: return "";
+		}
 	}
 
 	public static void setPersistent(PersistentDataHolder holder, NamespacedKey key, boolean value) {

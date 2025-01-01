@@ -1,4 +1,4 @@
-package dev.cmplx.servertweaks.items;
+package dev.cmplx.servertweaks.tweaks.items;
 
 import java.util.List;
 import java.util.UUID;

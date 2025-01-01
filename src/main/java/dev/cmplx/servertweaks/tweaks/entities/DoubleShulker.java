@@ -1,4 +1,4 @@
-package dev.cmplx.servertweaks.tweaks;
+package dev.cmplx.servertweaks.tweaks.entities;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Shulker;

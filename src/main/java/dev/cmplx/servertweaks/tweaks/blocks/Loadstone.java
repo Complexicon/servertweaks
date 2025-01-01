@@ -1,4 +1,4 @@
-package dev.cmplx.servertweaks.tweaks;
+package dev.cmplx.servertweaks.tweaks.blocks;
 
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;

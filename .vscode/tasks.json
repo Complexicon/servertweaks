@@ -4,7 +4,7 @@
 			"args": [
 				"test"
 			],
-			"command": "/Users/pleer/go/bin/yoko",
+			"command": "G:\\Path Folder\\yoko.exe",
 			"isBackground": true,
 			"label": "build and run",
 			"problemMatcher": {

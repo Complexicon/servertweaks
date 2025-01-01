@@ -1,4 +1,4 @@
-package dev.cmplx.servertweaks;
+package dev.cmplx.servertweaks.tweaks;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -13,6 +13,9 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+
+import dev.cmplx.servertweaks.Main;
+import dev.cmplx.servertweaks.Util;
 
 public class ToolStats implements Listener {
 	
@@ -61,7 +64,7 @@ public class ToolStats implements Listener {
 
 		if(!(isBow || isCrossbow || isTrident || isSword)) return;
 
-		updateStats(curItem, "&7Entities Killed: &a", 1);
+		updateStats(curItem, "&7Kills: &a", 1);
 	}
 
 	@EventHandler

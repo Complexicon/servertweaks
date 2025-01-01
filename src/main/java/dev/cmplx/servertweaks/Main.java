@@ -10,27 +10,27 @@ import org.bukkit.scoreboard.DisplaySlot;
 import dev.cmplx.servertweaks.commands.DebugItemsCommand;
 import dev.cmplx.servertweaks.commands.PartyCommand;
 import dev.cmplx.servertweaks.commands.TestCommand;
-import dev.cmplx.servertweaks.items.ArmoredElytra;
-import dev.cmplx.servertweaks.items.GPSCompass;
-import dev.cmplx.servertweaks.items.TimberEnchant;
 import dev.cmplx.servertweaks.tweaks.AnvilRename;
 import dev.cmplx.servertweaks.tweaks.CauldronConcrete;
-import dev.cmplx.servertweaks.tweaks.ConfigurableVillager;
 import dev.cmplx.servertweaks.tweaks.CraftingCustomizer;
 import dev.cmplx.servertweaks.tweaks.DiscordIntegration;
-import dev.cmplx.servertweaks.tweaks.DoubleShulker;
-import dev.cmplx.servertweaks.tweaks.DualDoor;
-import dev.cmplx.servertweaks.tweaks.HopperFilter;
-import dev.cmplx.servertweaks.tweaks.Loadstone;
-import dev.cmplx.servertweaks.tweaks.LockableChest;
-import dev.cmplx.servertweaks.tweaks.MobGriefing;
 import dev.cmplx.servertweaks.tweaks.MultiplayerSleep;
 import dev.cmplx.servertweaks.tweaks.QuickOpen;
 import dev.cmplx.servertweaks.tweaks.RightClickHarvest;
-import dev.cmplx.servertweaks.tweaks.SneakyMobs;
-import dev.cmplx.servertweaks.tweaks.TeleportAnchor;
-import dev.cmplx.servertweaks.tweaks.Timber;
+import dev.cmplx.servertweaks.tweaks.ToolStats;
 import dev.cmplx.servertweaks.tweaks.UnlockAll;
+import dev.cmplx.servertweaks.tweaks.blocks.DualDoor;
+import dev.cmplx.servertweaks.tweaks.blocks.HopperFilter;
+import dev.cmplx.servertweaks.tweaks.blocks.Loadstone;
+import dev.cmplx.servertweaks.tweaks.blocks.LockableChest;
+import dev.cmplx.servertweaks.tweaks.blocks.TeleportAnchor;
+import dev.cmplx.servertweaks.tweaks.entities.ConfigurableVillager;
+import dev.cmplx.servertweaks.tweaks.entities.DoubleShulker;
+import dev.cmplx.servertweaks.tweaks.entities.MobGriefing;
+import dev.cmplx.servertweaks.tweaks.entities.SneakyMobs;
+import dev.cmplx.servertweaks.tweaks.items.ArmoredElytra;
+import dev.cmplx.servertweaks.tweaks.items.GPSCompass;
+import dev.cmplx.servertweaks.tweaks.items.TimberEnchant;
 
 public class Main extends JavaPlugin {
 
@@ -62,9 +62,10 @@ public class Main extends JavaPlugin {
 		Util.getObjectiveSafe("deathCounter", "Tode", Criteria.DEATH_COUNT, DisplaySlot.PLAYER_LIST);
 
 		getCommand("party").setExecutor(new PartyCommand());
+		// getCommand("party").setTabCompleter(party);
+
 		getCommand("debugitems").setExecutor(new DebugItemsCommand());
 		getCommand("testcmd").setExecutor(new TestCommand());
-		// getCommand("party").setTabCompleter(party);
 
 		// these are necessary
 		registerWhen(true, MOTDHelper.class);
@@ -74,20 +75,18 @@ public class Main extends JavaPlugin {
 
 		// DEV
 		registerWhen(false, ConfigurableVillager.class);
-		registerWhen(true, DualDoor.class);
 		registerWhen(true, GPSCompass.class);
-		registerWhen(true, TeleportAnchor.class);
 
 		// optional events
 		registerWhen(true,				QuickOpen.class); // handled internally
 		registerWhen(true,				MobGriefing.class); // handled internally
+		registerWhen(true, 			DualDoor.class);
 		registerWhen(true, 			ToolStats.class);
 		registerWhen(Config.allRecipes,			UnlockAll.class);
 		registerWhen(Config.chunkloader,		Loadstone.class);
 		registerWhen(Config.multiplayerSleep,	MultiplayerSleep.class);
 		registerWhen(Config.armoredElytra,		ArmoredElytra.class);
 		registerWhen(Config.timberMod,			TimberEnchant.class);
-		registerWhen(Config.timberMod,			Timber.class);
 		registerWhen(Config.hopperFilter,		HopperFilter.class);
 		registerWhen(Config.sneakyMobs,			SneakyMobs.class);
 		registerWhen(Config.rightClickHarvest,	RightClickHarvest.class);
@@ -95,7 +94,8 @@ public class Main extends JavaPlugin {
 		registerWhen(Config.cauldronConcrete,	CauldronConcrete.class);
 		registerWhen(Config.discordIntegration,	DiscordIntegration.class);
 		registerWhen(Config.lockableChests, 	LockableChest.class);
-		registerWhen(Config.transformAnvilColorCodes, AnvilRename.class);
+		registerWhen(Config.anvilColorCodes, 	AnvilRename.class);
+		registerWhen(Config.teleportAnchors, 	TeleportAnchor.class);
 
 		Log.info("Startup Complete");
 	}

@@ -1,12 +1,11 @@
-package dev.cmplx.servertweaks.tweaks;
+package dev.cmplx.servertweaks.tweaks.blocks;
 
 import java.util.Arrays;
-import java.util.Map.Entry;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
-import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
@@ -28,12 +27,10 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
 import dev.cmplx.servertweaks.InventoryGUI;
-import dev.cmplx.servertweaks.Log;
 import dev.cmplx.servertweaks.Main;
 import dev.cmplx.servertweaks.Util;
 import dev.cmplx.servertweaks.commands.DebugItemsCommand;
-import dev.cmplx.servertweaks.serializable.TeleportAnchorContainer;
-import dev.cmplx.servertweaks.serializable.TeleportAnchorContainer.TeleportAnchorInfo;
+import dev.cmplx.servertweaks.serializable.NamedLocation;
 
 public class TeleportAnchor implements Listener {
 
@@ -55,29 +52,28 @@ public class TeleportAnchor implements Listener {
 		primaryWorld = Bukkit.getWorlds().get(0);
 	}
 
-	TeleportAnchorContainer getContainer() {
-		var container = Util.getPersistentSerializable(primaryWorld, teleportAnchor, TeleportAnchorContainer.class);
-		if (container == null) container = new TeleportAnchorContainer();
-		return container;
+	Map<UUID, NamedLocation> getAnchors() {
+		var empty = new HashMap<UUID, NamedLocation>();
+		@SuppressWarnings("unchecked")
+		Map<UUID, NamedLocation> data = Util.getPersistentSerializable(primaryWorld, teleportAnchor, empty.getClass());
+		if (data == null) return empty;
+		return data;
 	}
 
-	void updateContainer(Consumer<TeleportAnchorContainer> callback) {
-		var container = getContainer();
-		callback.accept(container);
+	public void setAnchors(Map<UUID, NamedLocation> newData) {
 		try {
-			Util.setPersistentSerialized(primaryWorld, teleportAnchor, container);
+			Util.setPersistentSerialized(primaryWorld, teleportAnchor, (HashMap<UUID, NamedLocation>)newData);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-	}
+	} 
 
 	class WaypointGUI extends InventoryGUI {
 
 		public WaypointGUI(UUID origin) {
 			super("Waypoints");
-			var anchors = getContainer().anchors.entrySet().stream().toList();
 
-			for (Entry<UUID,TeleportAnchorInfo> entry : anchors) {
+			for (var entry : getAnchors().entrySet()) {
 				var anchorID = entry.getKey();
 				var info = entry.getValue();
 
@@ -85,84 +81,22 @@ public class TeleportAnchor implements Listener {
 				var meta = pearl.getItemMeta();
 
 				meta.setDisplayName(info.name + (anchorID.equals(origin) ? Util.fixColor("&b (Currently Here)") : ""));
-				meta.setLore(Arrays.asList(Bukkit.getWorld(info.dim).getName(), "X: " + info.x + " Y: " + info.y + " Z: " + info.z));
+				meta.setLore(Arrays.asList(Bukkit.getWorld(info.dimension).getName(), "X: " + info.x + " Y: " + info.y + " Z: " + info.z));
 
 				pearl.setItemMeta(meta);
 
-				try {
-					addItem(pearl, e -> {
-						var player = (Player) e.getWhoClicked();
+				addItem(pearl, e -> {
+					var player = (Player) e.getWhoClicked();
 
-						player.closeInventory();
-						player.teleport(new Location(Bukkit.getWorld(info.dim), info.x, info.y, info.z));
-						player.playSound(player, Sound.BLOCK_PORTAL_TRAVEL, 0.5f, 2);
-						player.spawnParticle(Particle.TOTEM, player.getLocation(), 100, 1,1,1);
-					});
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+					player.closeInventory();
+					player.teleport(info.asLocation());
+					player.playSound(player, Sound.BLOCK_PORTAL_TRAVEL, 0.5f, 2);
+					player.spawnParticle(Particle.TOTEM, player.getLocation(), 100, 1,1,1);
+				});
 			}
-
 		}
 		
 	}
-
-	// class WaypointChooser implements InventoryHolder {
-
-	// 	Inventory inv;
-	// 	List<Entry<UUID, TeleportAnchorInfo>> anchors;
-		
-	// 	public WaypointChooser(UUID opener) {
-
-	// 		inv = Bukkit.createInventory(this, 27, "Waypoints");
-
-	// 		anchors = getContainer().anchors.entrySet().stream().toList();
-
-	// 		for (int i = 0; i < anchors.size(); i++) {
-	// 			var anchorInfo = anchors.get(i);
-
-	// 			var pearl = new ItemStack(anchorInfo.getKey().equals(opener) ? Material.ENDER_EYE : Material.ENDER_PEARL);
-	// 			var meta = pearl.getItemMeta();
-
-	// 			var info = anchorInfo.getValue();
-
-	// 			meta.setDisplayName(info.name + (anchorInfo.getKey().equals(opener) ? Util.fixColor("&b (Currently Here)") : ""));
-	// 			meta.setLore(Arrays.asList(Bukkit.getWorld(info.dim).getName(), "X: " + info.x + " Y: " + info.y + " Z: " + info.z));
-
-	// 			pearl.setItemMeta(meta);
-
-	// 			inv.setItem(i, pearl);
-	// 		}
-	// 	}
-
-	// 	public void onClick(InventoryClickEvent e) {
-	// 		if (e.getCurrentItem() == null) return;
-
-	// 		var anchorInfo = anchors.get(e.getSlot());
-	// 		var info = anchorInfo.getValue();
-			
-	// 		var player = (Player) e.getWhoClicked();
-
-	// 		player.closeInventory();
-	// 		player.teleport(new Location(Bukkit.getWorld(info.dim), info.x, info.y, info.z));
-	// 		player.playSound(player, Sound.BLOCK_PORTAL_TRAVEL, 0.5f, 2);
-	// 		player.spawnParticle(Particle.TOTEM, player.getLocation(), 100, 1,1,1);
-	// 	}
-
-	// 	@Override
-	// 	public Inventory getInventory() {
-	// 		return inv;
-	// 	}
-		
-	// }
-
-	// @EventHandler
-	// public void onTPInvInteract(InventoryClickEvent e) {
-	// 	if (e.getInventory().getHolder() instanceof WaypointChooser w) {
-	// 		e.setCancelled(true);
-	// 		w.onClick(e);
-	// 	}
-	// }
 
 	private boolean isTeleportAnchor(Block b) {
 		if (!(b.getState() instanceof Lectern)) return false;
@@ -177,7 +111,9 @@ public class TeleportAnchor implements Listener {
 	private void registerAnchor(Lectern l) throws Exception {
 		var id = UUID.randomUUID();
 
-		updateContainer(container -> container.anchors.put(id, new TeleportAnchorInfo(l)));
+		var anchors = getAnchors();
+		anchors.put(id, NamedLocation.fromLocation(l.getLocation(), "Teleport Anchor"));
+		setAnchors(anchors);
 
 		Util.setPersistent(l, teleportAnchor, id.toString());
 		l.update();
@@ -185,9 +121,7 @@ public class TeleportAnchor implements Listener {
 		l.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, l.getLocation(), 40, 1,1,1);
 		l.getWorld().playSound(l.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, 1);
 
-
-
-		Log.debug("Anchor Created");
+		// Log.debug("Anchor Created");
 	}
 
 	private ArmorStand getLabelForAnchor(Lectern l) {
@@ -207,9 +141,11 @@ public class TeleportAnchor implements Listener {
 
 		UUID id = UUID.fromString(Util.getPersistentString(l, teleportAnchor));
 
-		updateContainer(container -> container.anchors.remove(id));
+		var anchors = getAnchors();
+		anchors.remove(id);
+		setAnchors(anchors);
 
-		Log.debug("Anchor removed");
+		// Log.debug("Anchor removed");
 	}
 
 	@EventHandler
@@ -219,7 +155,7 @@ public class TeleportAnchor implements Listener {
 		if (!(e.getClickedBlock().getState() instanceof Lectern lectern)) return;
 		if (e.getItem() == null) return;
 		if (e.getItem().getType() != Material.ENCHANTED_BOOK) return;
-		// if (!Util.getPersistentBool(e.getItem().getItemMeta(), teleportAnchor)) return;
+		if (!Util.getPersistentBool(e.getItem().getItemMeta(), teleportAnchor)) return;
 
 		if (lectern.getInventory().getItem(0) != null) return; // cant create on lectern that has book present
 
@@ -230,24 +166,24 @@ public class TeleportAnchor implements Listener {
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onNameTeleportAnchor(InventoryOpenEvent e) {
+
 		if (e.getInventory().getType() != InventoryType.LECTERN) return;
 		if (!(e.getInventory().getHolder() instanceof Lectern l)) return;
 		if (!isTeleportAnchor(l.getBlock())) return;
 		if (e.getPlayer().getInventory().getItemInMainHand().getType() != Material.NAME_TAG) return;
-		if (!(
-			e.getPlayer().getInventory().getItemInMainHand().hasItemMeta() &&
-			e.getPlayer().getInventory().getItemInMainHand().getItemMeta().hasDisplayName())) return;
-
+		
 		var nametag = e.getPlayer().getInventory().getItemInMainHand();
+		
+		if (!(nametag.hasItemMeta() && nametag.getItemMeta().hasDisplayName())) return;
+
 		var newName = nametag.getItemMeta().getDisplayName();
 
 		UUID id = UUID.fromString(Util.getPersistentString(l, teleportAnchor));
 
-		updateContainer(container -> {
-			var anchorMeta = container.anchors.get(id);
-			anchorMeta.name = newName;
-			container.anchors.put(id, anchorMeta);
-		});
+		var anchors = getAnchors();
+		var namedLoc = anchors.get(id);
+		anchors.put(id, NamedLocation.fromLocation(namedLoc.asLocation(), newName));
+		setAnchors(anchors);
 
 		e.getPlayer().sendMessage("Set Teleport Anchor Name to: " + newName);
 		nametag.setAmount(nametag.getAmount() - 1);

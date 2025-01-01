@@ -1,4 +1,4 @@
-package dev.cmplx.servertweaks.tweaks;
+package dev.cmplx.servertweaks.tweaks.entities;
 
 import java.util.HashMap;
 import java.util.List;

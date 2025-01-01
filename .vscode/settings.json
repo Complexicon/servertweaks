@@ -2,15 +2,15 @@
 	"java.configuration.runtimes": [
 		{
 			"name": "JavaSE-17",
-			"path": "/Users/pleer/.yoko/java17/Contents/Home/"
+			"path": "C:\\Users\\Terminal\\.yoko\\java17"
 		}
 	],
 	"java.project.referencedLibraries": {
 		"include": [
-			"/Users/pleer/.yoko/api/api-1.20.2.jar"
+			"C:\\Users\\Terminal\\.yoko\\api\\api-1.20.2.jar"
 		],
 		"sources": {
-			"/Users/pleer/.yoko/api/api-1.20.2.jar": "/Users/pleer/.yoko/api/src-1.20.2.jar"
+			"C:\\Users\\Terminal\\.yoko\\api\\api-1.20.2.jar": "C:\\Users\\Terminal\\.yoko\\api\\src-1.20.2.jar"
 		}
 	},
 	"java.project.sourcePaths": [

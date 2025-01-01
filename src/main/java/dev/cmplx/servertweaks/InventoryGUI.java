@@ -100,7 +100,7 @@ public abstract class InventoryGUI implements InventoryHolder {
 		Bukkit.getPluginManager().registerEvents(new InventoryEventHandler(), Main.pluginRef);
 	}
 
-	protected void addItem(ItemStack item, int slot, Consumer<InventoryClickEvent> callback) throws Exception {
+	protected void addItem(ItemStack item, int slot, Consumer<InventoryClickEvent> callback) {
 		handlers.put(item, callback);
 		allItems.put(slot, item);
 	}
@@ -119,7 +119,7 @@ public abstract class InventoryGUI implements InventoryHolder {
 				.findFirst().orElseGet(() -> -1);
 	}
 
-	protected void addItem(ItemStack item, Consumer<InventoryClickEvent> callback) throws Exception {
+	protected void addItem(ItemStack item, Consumer<InventoryClickEvent> callback) {
 		addItem(item, firstFree(), callback);
 	}
 
@@ -137,7 +137,7 @@ public abstract class InventoryGUI implements InventoryHolder {
 			inv.setItem(53, Util.symbols.get("ARROW_RIGHT"));
 			assemblePage();
 		} else {
-			inv = Bukkit.createInventory(this, 9 * (int) Math.ceil((double) lastUsedSlot() / 9), label);
+			inv = Bukkit.createInventory(this, 9 * (int) Math.ceil((double) allItems.size() / 9), label);
 			assemblePage();
 		}
 

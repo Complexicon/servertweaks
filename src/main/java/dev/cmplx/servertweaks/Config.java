@@ -38,8 +38,9 @@ public class Config {
 	public static boolean multiplayerSleep = true;
 	public static boolean sneakyMobs = true;
 	public static boolean armoredElytra = true;
-	public static boolean gpsCompass = true;
-	public static boolean transformAnvilColorCodes = true;
+	// public static boolean gpsCompass = true;
+	public static boolean teleportAnchors = true;
+	public static boolean anvilColorCodes = true;
 
 	public static String motdHeader = "&cExample Message of the &bDay";
 	public static List<String> motdList = new ArrayList<>(){{
