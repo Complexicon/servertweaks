@@ -15,7 +15,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
-public abstract class InventoryGUI implements InventoryHolder {
+public class InventoryGUI implements InventoryHolder {
 
 	static class InventoryEventHandler implements Listener {
 		@EventHandler
@@ -60,7 +60,7 @@ public abstract class InventoryGUI implements InventoryHolder {
 
 	final ItemStack AIR = new ItemStack(Material.AIR);
 
-	protected void assemblePage() {
+	private void assemblePage() {
 		int from = 45 * (page - 1);
 		int to = 45 * page;
 
@@ -100,12 +100,12 @@ public abstract class InventoryGUI implements InventoryHolder {
 		Bukkit.getPluginManager().registerEvents(new InventoryEventHandler(), Main.pluginRef);
 	}
 
-	protected void addItem(ItemStack item, int slot, Consumer<InventoryClickEvent> callback) {
+	public void addItem(ItemStack item, int slot, Consumer<InventoryClickEvent> callback) {
 		handlers.put(item, callback);
 		allItems.put(slot, item);
 	}
 
-	protected void addItem(ItemStack item, int page, int slot, Consumer<InventoryClickEvent> callback)
+	public void addItem(ItemStack item, int page, int slot, Consumer<InventoryClickEvent> callback)
 			throws Exception {
 		addItem(item, (page * 45) + slot, callback);
 	}
@@ -119,7 +119,7 @@ public abstract class InventoryGUI implements InventoryHolder {
 				.findFirst().orElseGet(() -> -1);
 	}
 
-	protected void addItem(ItemStack item, Consumer<InventoryClickEvent> callback) {
+	public void addItem(ItemStack item, Consumer<InventoryClickEvent> callback) {
 		addItem(item, firstFree(), callback);
 	}
 

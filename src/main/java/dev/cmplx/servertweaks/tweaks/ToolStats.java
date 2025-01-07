@@ -7,10 +7,12 @@ import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.EnchantmentTarget;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -47,6 +49,26 @@ public class ToolStats implements Listener {
 
 		itemMeta.setLore(newLore);
 		curItem.setItemMeta(itemMeta);
+	}
+
+	@EventHandler
+	void onCraft(CraftItemEvent e) {
+		if(e.getWhoClicked() == null) return;
+		if(!(e.getWhoClicked() instanceof Player p)) return;
+
+		var curItem = e.getCurrentItem();
+
+		boolean isSword = EnchantmentTarget.WEAPON.includes(curItem);
+		boolean isBow = EnchantmentTarget.BOW.includes(curItem);
+		boolean isCrossbow = EnchantmentTarget.CROSSBOW.includes(curItem);
+		boolean isTrident = EnchantmentTarget.TRIDENT.includes(curItem);
+		boolean isTool = EnchantmentTarget.TOOL.includes(curItem);
+
+		if(!(isBow || isCrossbow || isTrident || isSword || isTool)) return;
+
+		var meta = curItem.getItemMeta();
+		meta.setLore(Arrays.asList(Util.fixColor("&7Crafted by: &f" + p.getName())));
+		curItem.setItemMeta(meta);
 	}
 
 	@EventHandler

@@ -16,6 +16,7 @@ import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 
+import dev.cmplx.servertweaks.ItemStackBuilder;
 import dev.cmplx.servertweaks.Main;
 import dev.cmplx.servertweaks.Util;
 import dev.cmplx.servertweaks.commands.DebugItemsCommand;
@@ -23,16 +24,14 @@ import dev.cmplx.servertweaks.tweaks.ToolStats;
 
 public class TimberEnchant implements Listener {
 
-	public static NamespacedKey timberEntchant = new NamespacedKey(Main.pluginRef, "timber");
+	public static final NamespacedKey timberEntchant = new NamespacedKey(Main.pluginRef, "timber");
+	public static final ItemStack timberBook = 
+		new ItemStackBuilder(Material.ENCHANTED_BOOK)
+		.setLore("&6Timber Verzauberung")
+		.setPersistent(timberEntchant, true)
+		.build();
 
-	static {
-		ItemStack timberBook = new ItemStack(Material.ENCHANTED_BOOK);
-		var meta = timberBook.getItemMeta();
-		meta.setLore(Arrays.asList("Timber Verzauberung"));
-		Util.setPersistent(meta, timberEntchant, true);
-		timberBook.setItemMeta(meta);
-		DebugItemsCommand.DebugItems.add(timberBook);
-	}
+	static { DebugItemsCommand.DebugItems.add(timberBook); }
 
 	@EventHandler
 	public void onAnvilCraft(PrepareAnvilEvent e) {

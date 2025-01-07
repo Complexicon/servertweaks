@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import dev.cmplx.servertweaks.InventoryGUI;
+import dev.cmplx.servertweaks.Util;
 
 public class TestCommand  implements CommandExecutor {
 
@@ -22,6 +23,11 @@ public class TestCommand  implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+
+		if (!sender.hasPermission("servertweaks.debug")) {
+			sender.sendMessage(Util.fixColor("&4No Permission to use this Command!"));
+			return false;
+		}
 
 		if (!(sender instanceof Player)) {
 			sender.sendMessage("Only players can run this command !");

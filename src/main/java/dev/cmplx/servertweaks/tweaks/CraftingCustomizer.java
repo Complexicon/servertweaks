@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.SmithingRecipe;
 import org.bukkit.inventory.SmithingTransformRecipe;
 
+import dev.cmplx.servertweaks.Config;
 import dev.cmplx.servertweaks.Main;
 import dev.cmplx.servertweaks.tweaks.items.GPSCompass;
 
@@ -37,13 +38,15 @@ public class CraftingCustomizer {
 
 		Bukkit.addRecipe(gravel_sand);
 
-		NamespacedKey gps_compass_key = new NamespacedKey(Main.pluginRef, "gps_compass");
-		ShapelessRecipe gps_compass = new ShapelessRecipe(gps_compass_key, GPSCompass.gpsCompass);
-		gps_compass.addIngredient(Material.COMPASS);
-		gps_compass.addIngredient(Material.EMERALD);
-		gps_compass.addIngredient(Material.REPEATER);
-
-		Bukkit.addRecipe(gps_compass);
+		if (Config.gpsCompass) {
+			NamespacedKey gps_compass_key = new NamespacedKey(Main.pluginRef, "gps_compass");
+			ShapelessRecipe gps_compass = new ShapelessRecipe(gps_compass_key, GPSCompass.gpsCompass);
+			gps_compass.addIngredient(Material.COMPASS);
+			gps_compass.addIngredient(Material.EMERALD);
+			gps_compass.addIngredient(Material.REPEATER);
+	
+			Bukkit.addRecipe(gps_compass);
+		}
 
 	}
 

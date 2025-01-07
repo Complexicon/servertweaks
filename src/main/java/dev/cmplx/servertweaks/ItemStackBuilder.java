@@ -40,6 +40,11 @@ public class ItemStackBuilder {
 		return this;
 	}
 
+	public ItemStackBuilder setLore(List<String> lore) {
+		this.meta.setLore(lore.stream().map(line -> Util.fixColor(line)).toList());
+		return this;
+	}
+
 	public ItemStackBuilder setPersistent(NamespacedKey key, String value) {
 		Util.setPersistent(meta, key, value);
 		return this;

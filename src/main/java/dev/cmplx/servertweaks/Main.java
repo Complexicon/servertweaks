@@ -2,18 +2,15 @@ package dev.cmplx.servertweaks;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.Criteria;
 import org.bukkit.scoreboard.DisplaySlot;
 
-import dev.cmplx.servertweaks.commands.DebugItemsCommand;
-import dev.cmplx.servertweaks.commands.PartyCommand;
-import dev.cmplx.servertweaks.commands.TestCommand;
 import dev.cmplx.servertweaks.tweaks.AnvilRename;
 import dev.cmplx.servertweaks.tweaks.CauldronConcrete;
 import dev.cmplx.servertweaks.tweaks.CraftingCustomizer;
 import dev.cmplx.servertweaks.tweaks.DiscordIntegration;
+import dev.cmplx.servertweaks.tweaks.LootGenerateHook;
 import dev.cmplx.servertweaks.tweaks.MultiplayerSleep;
 import dev.cmplx.servertweaks.tweaks.QuickOpen;
 import dev.cmplx.servertweaks.tweaks.RightClickHarvest;
@@ -28,13 +25,14 @@ import dev.cmplx.servertweaks.tweaks.entities.ConfigurableVillager;
 import dev.cmplx.servertweaks.tweaks.entities.DoubleShulker;
 import dev.cmplx.servertweaks.tweaks.entities.MobGriefing;
 import dev.cmplx.servertweaks.tweaks.entities.SneakyMobs;
+import dev.cmplx.servertweaks.tweaks.entities.WanderingTraderModifier;
 import dev.cmplx.servertweaks.tweaks.items.ArmoredElytra;
 import dev.cmplx.servertweaks.tweaks.items.GPSCompass;
 import dev.cmplx.servertweaks.tweaks.items.TimberEnchant;
 
 public class Main extends JavaPlugin {
 
-	public static Plugin pluginRef;
+	public static JavaPlugin pluginRef;
 	
 	void registerWhen(boolean when, Class<? extends Listener> listener) {
 		try {
@@ -61,13 +59,10 @@ public class Main extends JavaPlugin {
 
 		Util.getObjectiveSafe("deathCounter", "Tode", Criteria.DEATH_COUNT, DisplaySlot.PLAYER_LIST);
 
-		getCommand("party").setExecutor(new PartyCommand());
-		// getCommand("party").setTabCompleter(party);
-
-		getCommand("debugitems").setExecutor(new DebugItemsCommand());
-		getCommand("testcmd").setExecutor(new TestCommand());
+		CommandManager.init();
 
 		// these are necessary
+		registerWhen(true, LootGenerateHook.class);
 		registerWhen(true, MOTDHelper.class);
 		registerWhen(true, PlaytimeTracker.class);
 		registerWhen(true, ChatEvents.class);
@@ -75,9 +70,9 @@ public class Main extends JavaPlugin {
 
 		// DEV
 		registerWhen(false, ConfigurableVillager.class);
-		registerWhen(true, GPSCompass.class);
 
 		// optional events
+		registerWhen(true, WanderingTraderModifier.class); // handled internally
 		registerWhen(true,				QuickOpen.class); // handled internally
 		registerWhen(true,				MobGriefing.class); // handled internally
 		registerWhen(true, 			DualDoor.class);
@@ -96,6 +91,7 @@ public class Main extends JavaPlugin {
 		registerWhen(Config.lockableChests, 	LockableChest.class);
 		registerWhen(Config.anvilColorCodes, 	AnvilRename.class);
 		registerWhen(Config.teleportAnchors, 	TeleportAnchor.class);
+		registerWhen(Config.gpsCompass, 		GPSCompass.class);
 
 		Log.info("Startup Complete");
 	}

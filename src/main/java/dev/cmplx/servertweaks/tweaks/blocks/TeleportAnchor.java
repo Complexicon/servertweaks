@@ -1,11 +1,14 @@
 package dev.cmplx.servertweaks.tweaks.blocks;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
@@ -27,6 +30,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
 import dev.cmplx.servertweaks.InventoryGUI;
+import dev.cmplx.servertweaks.ItemStackBuilder;
+import dev.cmplx.servertweaks.Log;
 import dev.cmplx.servertweaks.Main;
 import dev.cmplx.servertweaks.Util;
 import dev.cmplx.servertweaks.commands.DebugItemsCommand;
@@ -34,17 +39,14 @@ import dev.cmplx.servertweaks.serializable.NamedLocation;
 
 public class TeleportAnchor implements Listener {
 
-	public static NamespacedKey teleportAnchor = new NamespacedKey(Main.pluginRef, "teleportAnchor");
+	public static final NamespacedKey teleportAnchor = new NamespacedKey(Main.pluginRef, "teleportAnchor");
+	public static final ItemStack teleportBook = 
+		new ItemStackBuilder(Material.ENCHANTED_BOOK)
+		.setLore("&dBuch der Teleportation", "&7&oBenutz mich auf einem Lectern :)")
+		.setPersistent(teleportAnchor, true)
+		.build();
 
-	public static final ItemStack teleportBook = new ItemStack(Material.ENCHANTED_BOOK);
-
-	static {
-		var meta = teleportBook.getItemMeta();
-		meta.setLore(Arrays.asList("Teleportation Book"));
-		Util.setPersistent(meta, teleportAnchor, true);
-		teleportBook.setItemMeta(meta);
-		DebugItemsCommand.DebugItems.add(teleportBook);
-	}
+	static { DebugItemsCommand.DebugItems.add(teleportBook); }
 
 	World primaryWorld;
 
@@ -57,6 +59,25 @@ public class TeleportAnchor implements Listener {
 		@SuppressWarnings("unchecked")
 		Map<UUID, NamedLocation> data = Util.getPersistentSerializable(primaryWorld, teleportAnchor, empty.getClass());
 		if (data == null) return empty;
+
+		List<UUID> toRemove = new ArrayList<>();
+
+		for (var anchor : data.entrySet()) {
+			var uuid = anchor.getKey();
+			var info = anchor.getValue();
+			var loc = info.asLocation();
+			loc.getWorld().getChunkAt(loc); // temp load chunk
+
+			if (!isTeleportAnchor(loc.getWorld().getBlockAt(loc))) {
+				toRemove.add(uuid);
+				Log.info("Corrupted Teleport Anchor detected at: " + ChatColor.stripColor(Util.fixColor(String.join(", ", info.prettyPrint()))));
+			}
+		}
+
+		for (UUID uuid : toRemove) {
+			data.remove(uuid);
+		}
+
 		return data;
 	}
 
@@ -66,36 +87,64 @@ public class TeleportAnchor implements Listener {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-	} 
+	}
 
-	class WaypointGUI extends InventoryGUI {
+	Map<UUID, NamedLocation> getPlayerDiscoveredAnchors(Player p) {
 
-		public WaypointGUI(UUID origin) {
-			super("Waypoints");
+		var empty = new ArrayList<UUID>();
+		@SuppressWarnings("unchecked")
+		List<UUID> data = Util.getPersistentSerializable(p, teleportAnchor, empty.getClass());
+		if (data == null) return new HashMap<UUID, NamedLocation>();
 
-			for (var entry : getAnchors().entrySet()) {
-				var anchorID = entry.getKey();
-				var info = entry.getValue();
+		var allAnchors = getAnchors();
 
-				var pearl = new ItemStack(anchorID.equals(origin) ? Material.ENDER_EYE : Material.ENDER_PEARL);
-				var meta = pearl.getItemMeta();
+		return allAnchors
+		.entrySet()
+		.stream()
+		.filter(v -> data.contains(v.getKey()))
+		.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+	}
 
-				meta.setDisplayName(info.name + (anchorID.equals(origin) ? Util.fixColor("&b (Currently Here)") : ""));
-				meta.setLore(Arrays.asList(Bukkit.getWorld(info.dimension).getName(), "X: " + info.x + " Y: " + info.y + " Z: " + info.z));
+	void discoverAnchor(UUID anchor, Player p) {
+		var playerAnchors = getPlayerDiscoveredAnchors(p);
+		if (playerAnchors.containsKey(anchor)) return;
 
-				pearl.setItemMeta(meta);
-
-				addItem(pearl, e -> {
-					var player = (Player) e.getWhoClicked();
-
-					player.closeInventory();
-					player.teleport(info.asLocation());
-					player.playSound(player, Sound.BLOCK_PORTAL_TRAVEL, 0.5f, 2);
-					player.spawnParticle(Particle.TOTEM, player.getLocation(), 100, 1,1,1);
-				});
-			}
-		}
+		var discoveredList = new ArrayList<>(playerAnchors.keySet());
+		discoveredList.add(anchor);
 		
+		try {
+			Util.setPersistentSerialized(p, teleportAnchor, discoveredList);
+			p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 2);
+			p.sendMessage(Util.fixColor("&aNeuen Wegpunkt entdeckt!"));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	void openWaypoints(UUID origin, Player p) {
+		var gui = new InventoryGUI("Waypoints");
+
+		for (var entry : getPlayerDiscoveredAnchors(p).entrySet()) {
+			var anchorID = entry.getKey();
+			var info = entry.getValue();
+
+			var pearl = new ItemStackBuilder(anchorID.equals(origin) ? Material.ENDER_EYE : Material.ENDER_PEARL)
+				.setName(info.name + (anchorID.equals(origin) ? Util.fixColor("&b (Currently Here)") : ""))
+				.setLore(info.prettyPrint())
+				.build();
+
+			gui.addItem(pearl, e -> {
+				var player = (Player) e.getWhoClicked();
+
+				player.closeInventory();
+				player.teleport(info.asLocation());
+				player.playSound(player, Sound.BLOCK_PORTAL_TRAVEL, 0.5f, 2);
+				player.spawnParticle(Particle.TOTEM, player.getLocation(), 100, 1,1,1);
+			});
+		}
+
+		p.openInventory(gui.getInventory());
+
 	}
 
 	private boolean isTeleportAnchor(Block b) {
@@ -216,8 +265,10 @@ public class TeleportAnchor implements Listener {
 
 		UUID id = UUID.fromString(Util.getPersistentString(l, teleportAnchor));
 
+		discoverAnchor(id, (Player)e.getPlayer());
+
 		e.setCancelled(true);
-		e.getPlayer().openInventory(new WaypointGUI(id).getInventory());
+		openWaypoints(id, (Player)e.getPlayer());
 	}
 
 	@EventHandler

@@ -1,5 +1,7 @@
 package dev.cmplx.servertweaks.commands;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -7,6 +9,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import dev.cmplx.servertweaks.Main;
@@ -16,9 +19,9 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.ClickEvent.Action;
 
-public class PartyCommand implements CommandExecutor/*, TabCompleter */ {
+public class PartyCommand implements CommandExecutor, TabCompleter {
 
-	// List<String> subcommands = Arrays.asList("create", "setname", "leave", "invite");
+	List<String> subcommands = Arrays.asList("create", "setname", "leave", "invite");
 
 	NamespacedKey partyKey = new NamespacedKey(Main.pluginRef, "party");
 
@@ -127,7 +130,12 @@ public class PartyCommand implements CommandExecutor/*, TabCompleter */ {
 			return;
 		}
 
-		Util.getTeamSafe(party).removeEntry(sender.getName());
+		var team = Util.getTeamSafe(party);
+
+		team.removeEntry(sender.getName());
+		if (team.getEntries().size() == 0) {
+			team.unregister();
+		}
 		sender.getPersistentDataContainer().remove(partyKey);
 		sender.sendMessage("Party wurde verlassen.");
 	}
@@ -157,15 +165,32 @@ public class PartyCommand implements CommandExecutor/*, TabCompleter */ {
 		sender.sendMessage(Util.fixColor("&aName geändert zu: " + coloredName));
 	}
 
-	// @Override
-	// public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+	@Override
+	public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
 
-	// 	if (!(sender instanceof Player)) {
-	// 		sender.sendMessage("Only players can run this command !");
-	// 		return Arrays.asList("");
-	// 	}
+		if (!(sender instanceof Player)) {
+			return Arrays.asList("");
+		}
 
-	// 	return subcommands.stream().filter(v -> v.startsWith(args[0])).toList();
-	// }
+		if (args.length == 1) {
+			return subcommands.stream().filter(v -> v.startsWith(args[0])).toList();
+		}
+
+		if (args.length == 2) {
+			var firstArg = args[0];
+			switch (firstArg) {
+			case "invite":
+				return Bukkit.getOnlinePlayers().stream().map(p -> p.getName()).toList();
+			case "setname":
+				// return Arrays.asList("<name>");
+			case "leave":
+			case "create":
+				return Arrays.asList("");
+			}
+		}
+
+		return Arrays.asList("");
+
+	}
 
 }

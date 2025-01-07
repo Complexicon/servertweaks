@@ -19,6 +19,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
@@ -26,7 +27,6 @@ import org.bukkit.inventory.meta.CompassMeta;
 
 import dev.cmplx.servertweaks.InventoryGUI;
 import dev.cmplx.servertweaks.ItemStackBuilder;
-import dev.cmplx.servertweaks.Log;
 import dev.cmplx.servertweaks.Main;
 import dev.cmplx.servertweaks.Util;
 import dev.cmplx.servertweaks.commands.DebugItemsCommand;
@@ -100,76 +100,90 @@ public class GPSCompass implements Listener {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-	} 
+	}
 
-	class WaypointGUI extends InventoryGUI {
+	void openWaypoints(Player p, ItemStack openingCompass) {
+		var gui = new InventoryGUI("Waypoints");
 
-		public WaypointGUI(Player p, ItemStack openingCompass) {
-			super("Waypoints");
+		for (var info : getWaypoints(p)) {
 
-			for (var info : getWaypoints(p)) {
+			if (!p.getWorld().getUID().equals(info.dimension)) {
+				continue; // dont display waypoints that are not in the current dimension 
+			}
 
-				if (!p.getWorld().getUID().equals(info.dimension)) {
-					continue; // dont display waypoints that are not in the current dimension 
+			var lore = new ArrayList<>(info.prettyPrint());
+			lore.add("&d&o(Mausrad zum Entfernen klicken)");
+
+			var displayItem = new ItemStackBuilder(Material.PAPER)
+				.setName(info.name)
+				.setLore(lore)
+				.build();
+
+			gui.addItem(displayItem, e -> {
+				var player = (Player) e.getWhoClicked();
+				
+				if (e.getClick() == ClickType.MIDDLE) {
+					var waypoints = getWaypoints(p);
+					waypoints.remove(waypoints.indexOf(info));
+					setWaypoints(p, waypoints);
+					player.sendMessage(Util.fixColor("&7Wegpunkt " + info.name + " &7Entfernt."));
+					player.closeInventory();
+					return;
 				}
 
-				var displayItem = new ItemStackBuilder(Material.PAPER)
-					.setName(info.name)
-					.setLore(
-						Bukkit.getWorld(info.dimension).getName(),
-						"X: " + info.x + " Y: " + info.y + " Z: " + info.z
-					)
-					.build();
+				var compassMeta = (CompassMeta) openingCompass.getItemMeta();
+				Util.setPersistent(compassMeta, gpsCurrentTracking, info.name);
+				compassMeta.setLodestoneTracked(false);
+				compassMeta.setLodestone(info.asLocation());
+				openingCompass.setItemMeta(compassMeta);
 
-				addItem(displayItem, e -> {
-					var player = (Player) e.getWhoClicked();
-					
-					if (e.getClick() == ClickType.MIDDLE) {
-						var waypoints = getWaypoints(p);
-						waypoints.remove(waypoints.indexOf(info));
-						setWaypoints(p, waypoints);
-						Log.debug("removed");
-						player.closeInventory();
-						return;
-					}
-
-					var compassMeta = (CompassMeta) openingCompass.getItemMeta();
-					Util.setPersistent(compassMeta, gpsCurrentTracking, info.name);
-					compassMeta.setLodestoneTracked(false);
-					compassMeta.setLodestone(info.asLocation());
-					openingCompass.setItemMeta(compassMeta);
-
-					player.closeInventory();
-					Log.debug("targeting waypoint");
-					trackingPlayers.put(p, openingCompass);
-				});
-			}
+				player.closeInventory();
+				player.sendMessage(Util.fixColor("&6Google Maps berechnet die Route zu: " + info.name));
+				
+				trackingPlayers.put(p, openingCompass);
+			});
 		}
 
+		p.openInventory(gui.getInventory());
 	}
 
-	@EventHandler
-	public void onSwitchFromGPS(PlayerItemHeldEvent e) {
-		var oldItem = e.getPlayer().getInventory().getItem(e.getPreviousSlot());
-		if (oldItem == null) return;
-		if (oldItem.getType() != Material.COMPASS) return;
-		if (!Util.getPersistentBool(oldItem.getItemMeta(), gpsEnabled)) return;
-		if (((CompassMeta)oldItem.getItemMeta()).getLodestone() == null) return; // has no tracked location
+	boolean checkUntrack(ItemStack item, Player p) {
+		if (item == null) return false;
+		if (item.getType() != Material.COMPASS) return false;
+		if (!Util.getPersistentBool(item.getItemMeta(), gpsEnabled)) return false;
+		if (((CompassMeta)item.getItemMeta()).getLodestone() == null) return false; // has no tracked location
 		
-		trackingPlayers.remove(e.getPlayer());
-		// Log.debug("no longer holding");
+		trackingPlayers.remove(p);
+		return true;
 	}
 
 	@EventHandler
-	public void onHoldingGPS(PlayerItemHeldEvent e) {
-		var newItem = e.getPlayer().getInventory().getItem(e.getNewSlot());
-		if (newItem == null) return;
-		if (newItem.getType() != Material.COMPASS) return;
-		if (!Util.getPersistentBool(newItem.getItemMeta(), gpsEnabled)) return;
-		if (((CompassMeta)newItem.getItemMeta()).getLodestone() == null) return; // has no tracked location
+	void onSwitchFromGPS(PlayerItemHeldEvent e) {
+		checkUntrack(e.getPlayer().getInventory().getItem(e.getPreviousSlot()), e.getPlayer());
+	}
 
-		trackingPlayers.put(e.getPlayer(), newItem);
-		// Log.debug("now holding");
+	@EventHandler
+	void onDropGPS(PlayerDropItemEvent e) {
+		var item = e.getItemDrop().getItemStack();
+		if(checkUntrack(item, e.getPlayer())) { // clear tracking on item drop
+			var meta = (CompassMeta)item.getItemMeta();
+			meta.setLodestone(null);
+			item.setItemMeta(meta);
+		}
+	}
+
+	void checkTrack(ItemStack item, Player p) {
+		if (item == null) return;
+		if (item.getType() != Material.COMPASS) return;
+		if (!Util.getPersistentBool(item.getItemMeta(), gpsEnabled)) return;
+		if (((CompassMeta)item.getItemMeta()).getLodestone() == null) return; // has no tracked location
+
+		trackingPlayers.put(p, item);
+	}
+
+	@EventHandler
+	void onHoldingGPS(PlayerItemHeldEvent e) {
+		checkTrack(e.getPlayer().getInventory().getItem(e.getNewSlot()), e.getPlayer());
 	}
 
 	@EventHandler
@@ -179,12 +193,15 @@ public class GPSCompass implements Listener {
 		if (e.getItem().getType() != Material.COMPASS) return;
 		if (!Util.getPersistentBool(e.getItem().getItemMeta(), gpsEnabled)) return;
 		
-		if (getWaypoints(e.getPlayer()).size() == 0) {
-			e.getPlayer().sendMessage("no waypoints");
+		Player p = e.getPlayer();
+
+		if (getWaypoints(p).size() == 0) {
+			p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
+			e.getPlayer().sendMessage(Util.fixColor("&cKeine Wegpunkte gespeichert!"));
 			return;
 		}
 
-		e.getPlayer().openInventory(new WaypointGUI(e.getPlayer(), e.getItem()).getInventory());
+		openWaypoints(p, e.getItem());
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
@@ -200,7 +217,7 @@ public class GPSCompass implements Listener {
 		var signText = s.getSide(Side.FRONT).getLine(0);
 		var chatColor = Util.toColorCode(s.getSide(Side.FRONT).getColor());
 
-		if (chatColor == "&0") { // invert black with white, default sign color, cant read shit with black text
+		if (chatColor.equals("&0")) { // invert black with white, default sign color, cant read shit with black text
 			chatColor = "&f";
 		}
 		
@@ -214,7 +231,7 @@ public class GPSCompass implements Listener {
 				var newName = NamedLocation.fromLocation(existingWaypoint.get().asLocation(), signText);
 
 				waypoints.set(waypoints.indexOf(existingWaypoint.get()), newName);
-				e.getPlayer().sendMessage("updated waypoint name");
+				e.getPlayer().sendMessage(Util.fixColor("&aWegpunktname geupdated!"));
 
 				setWaypoints(e.getPlayer(), waypoints);
 			}
@@ -224,7 +241,7 @@ public class GPSCompass implements Listener {
 
 		waypoints.add(NamedLocation.fromLocation(s.getLocation(), signText));
 		setWaypoints(e.getPlayer(), waypoints);
-		e.getPlayer().sendMessage("added waypoint");
+		e.getPlayer().sendMessage(Util.fixColor("&aWegpunkt hinzugefügt!"));
 		
 	}
 

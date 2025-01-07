@@ -1,6 +1,8 @@
 package dev.cmplx.servertweaks.serializable;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -30,6 +32,13 @@ public class NamedLocation implements Serializable {
 
 	public static NamedLocation fromLocation(Location l, String name) {
 		return new NamedLocation(l.getX(), l.getY(), l.getZ(), l.getWorld().getUID(), name);
+	}
+
+	public List<String> prettyPrint() {
+		return Arrays.asList(
+			"&8" + Bukkit.getWorld(dimension).getName(),
+			"&7X: &6" + x + " &7Y: &6" + y + " &7Z: &6" + z
+		);
 	}
 
 	@Override
