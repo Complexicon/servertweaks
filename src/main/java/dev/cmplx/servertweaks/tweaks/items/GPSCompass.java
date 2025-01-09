@@ -110,7 +110,7 @@ public class GPSCompass implements Listener {
 			.filter(v->p.getWorld().getUID().equals(v.dimension))  // dont display waypoints that are not in the current dimension 
 			.toList());
 
-		if (getWaypoints(p).size() == 0) {
+		if (curWaypoints.size() == 0) {
 			p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
 			p.sendMessage(Util.fixColor("&cKeine Wegpunkte gespeichert!"));
 			return;
