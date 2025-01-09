@@ -91,7 +91,11 @@ public class GPSCompass implements Listener {
 		@SuppressWarnings("unchecked")
 		List<NamedLocation> data = Util.getPersistentSerializable(p, gpsWaypoints, empty.getClass());
 		if (data == null) return empty;
-		return data;
+
+		return data
+			.stream()
+			.filter(v->p.getWorld().getUID().equals(v.dimension))  // dont display waypoints that are not in the current dimension 
+			.toList();
 	}
 
 	public void setWaypoints(Player p, List<NamedLocation> newData) {
@@ -106,10 +110,6 @@ public class GPSCompass implements Listener {
 		var gui = new InventoryGUI("Waypoints");
 
 		for (var info : getWaypoints(p)) {
-
-			if (!p.getWorld().getUID().equals(info.dimension)) {
-				continue; // dont display waypoints that are not in the current dimension 
-			}
 
 			var lore = new ArrayList<>(info.prettyPrint());
 			lore.add("&d&o(Mausrad zum Entfernen klicken)");
