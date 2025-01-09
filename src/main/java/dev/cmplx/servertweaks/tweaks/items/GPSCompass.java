@@ -92,10 +92,7 @@ public class GPSCompass implements Listener {
 		List<NamedLocation> data = Util.getPersistentSerializable(p, gpsWaypoints, empty.getClass());
 		if (data == null) return empty;
 
-		return new ArrayList<>(data
-			.stream()
-			.filter(v->p.getWorld().getUID().equals(v.dimension))  // dont display waypoints that are not in the current dimension 
-			.toList());
+		return data;
 	}
 
 	public void setWaypoints(Player p, List<NamedLocation> newData) {
@@ -107,9 +104,21 @@ public class GPSCompass implements Listener {
 	}
 
 	void openWaypoints(Player p, ItemStack openingCompass) {
+
+		var curWaypoints = new ArrayList<>(getWaypoints(p)
+			.stream()
+			.filter(v->p.getWorld().getUID().equals(v.dimension))  // dont display waypoints that are not in the current dimension 
+			.toList());
+
+		if (getWaypoints(p).size() == 0) {
+			p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
+			p.sendMessage(Util.fixColor("&cKeine Wegpunkte gespeichert!"));
+			return;
+		}
+
 		var gui = new InventoryGUI("Waypoints");
 
-		for (var info : getWaypoints(p)) {
+		for (var info : curWaypoints) {
 
 			var lore = new ArrayList<>(info.prettyPrint());
 			lore.add("&d&o(Mausrad zum Entfernen klicken)");
@@ -194,12 +203,6 @@ public class GPSCompass implements Listener {
 		if (!Util.getPersistentBool(e.getItem().getItemMeta(), gpsEnabled)) return;
 		
 		Player p = e.getPlayer();
-
-		if (getWaypoints(p).size() == 0) {
-			p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
-			e.getPlayer().sendMessage(Util.fixColor("&cKeine Wegpunkte gespeichert!"));
-			return;
-		}
 
 		openWaypoints(p, e.getItem());
 	}
