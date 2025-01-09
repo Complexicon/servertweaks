@@ -1,7 +1,6 @@
 package dev.cmplx.servertweaks.tweaks.items;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -17,7 +16,7 @@ import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.inventory.PrepareSmithingEvent;
-import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.EquipmentSlotGroup;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.inventory.SmithingRecipe;
@@ -28,9 +27,10 @@ import dev.cmplx.servertweaks.Main;
 
 public class ArmoredElytra implements Listener {
 
+	static final NamespacedKey armoredElytraKey = new NamespacedKey(Main.pluginRef, "armored_elytra");
+	
 	public ArmoredElytra() {
 
-		NamespacedKey armoredElytraKey = new NamespacedKey(Main.pluginRef, "armored_elytra");
 
 		/* ARMORED ELYTRA */
 		SmithingRecipe armoredElytra = new SmithingTransformRecipe(
@@ -47,7 +47,7 @@ public class ArmoredElytra implements Listener {
 	@EventHandler
 	void onItemBurn(EntityDamageEvent e) {
 		if(e.getCause() == DamageCause.LAVA  || e.getCause() == DamageCause.FIRE) {
-			if(e.getEntityType() == EntityType.DROPPED_ITEM) {
+			if(e.getEntityType() == EntityType.ITEM) {
 				Item dropped = (Item) e.getEntity();
 				ItemMeta droppedMeta = dropped.getItemStack().getItemMeta();
 				if(droppedMeta.hasLore() && droppedMeta.getLore().get(0).contains("Netherite Reinforced")) {
@@ -59,7 +59,7 @@ public class ArmoredElytra implements Listener {
 
 	@EventHandler
 	void onItemBurn(EntityCombustEvent e) {
-		if(e.getEntityType() == EntityType.DROPPED_ITEM) {
+		if(e.getEntityType() == EntityType.ITEM) {
 			Item dropped = (Item) e.getEntity();
 			ItemMeta droppedMeta = dropped.getItemStack().getItemMeta();
 			if(droppedMeta.hasLore() && droppedMeta.getLore().get(0).contains("Netherite Reinforced")) {
@@ -81,8 +81,8 @@ public class ArmoredElytra implements Listener {
 			ItemMeta elytra = e.getResult().getItemMeta();
 			if(elytra.hasAttributeModifiers()) return;
 
-			AttributeModifier moreArmor = new AttributeModifier(UUID.randomUUID(), "generic.armor", 7, Operation.ADD_NUMBER, EquipmentSlot.CHEST);
-			elytra.addAttributeModifier(Attribute.GENERIC_ARMOR, moreArmor);
+			AttributeModifier moreArmor = new AttributeModifier(armoredElytraKey, 7.0d, Operation.ADD_NUMBER, EquipmentSlotGroup.CHEST);
+			elytra.addAttributeModifier(Attribute.ARMOR, moreArmor);
 			elytra.setLore(List.of("§5Netherite Reinforced"));
 			e.getResult().setItemMeta(elytra);
 

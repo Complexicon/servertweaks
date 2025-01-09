@@ -139,7 +139,7 @@ public class TeleportAnchor implements Listener {
 				player.closeInventory();
 				player.teleport(info.asLocation());
 				player.playSound(player, Sound.BLOCK_PORTAL_TRAVEL, 0.5f, 2);
-				player.spawnParticle(Particle.TOTEM, player.getLocation(), 100, 1,1,1);
+				player.spawnParticle(Particle.TOTEM_OF_UNDYING, player.getLocation(), 100, 1,1,1);
 			});
 		}
 
@@ -167,7 +167,7 @@ public class TeleportAnchor implements Listener {
 		Util.setPersistent(l, teleportAnchor, id.toString());
 		l.update();
 		l.getInventory().setItem(0, new ItemStack(Material.WRITABLE_BOOK));
-		l.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, l.getLocation(), 40, 1,1,1);
+		l.getWorld().spawnParticle(Particle.ENCHANT, l.getLocation(), 40, 1,1,1);
 		l.getWorld().playSound(l.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, 1);
 
 		// Log.debug("Anchor Created");

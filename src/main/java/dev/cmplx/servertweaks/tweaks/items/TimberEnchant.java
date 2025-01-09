@@ -64,7 +64,8 @@ public class TimberEnchant implements Listener {
 
 		axe.setItemMeta(meta);
 
-		anvil.setRepairCost(0);
+		e.getView().setRepairCost(0);
+
 		e.setResult(axe);
 
 	}
@@ -123,7 +124,7 @@ public class TimberEnchant implements Listener {
 		if(e.getBlock().getType().toString().endsWith("_LOG") && Util.getPersistentBool(tool.getItemMeta(), TimberEnchant.timberEntchant)) {
 
 			Damageable axe = (Damageable) tool.getItemMeta();
-			int unbreakingLevel = axe.getEnchantLevel(Enchantment.DURABILITY);
+			int unbreakingLevel = axe.getEnchantLevel(Enchantment.UNBREAKING);
 
 			List<Block> blocks = recursiveBlockLocator(e.getBlock(), new ArrayList<>(), 5000);
 

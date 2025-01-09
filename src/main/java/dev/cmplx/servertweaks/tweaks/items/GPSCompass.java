@@ -63,7 +63,7 @@ public class GPSCompass implements Listener {
 				
 				for (int i = targetLoc.getBlockY(); i < targetLoc.getWorld().getMaxHeight(); i++) {
 					p.spawnParticle(
-						Particle.FIREWORKS_SPARK,
+						Particle.FIREWORK,
 						new Location(targetLoc.getWorld(), targetLoc.getX(), i, targetLoc.getZ()),
 						2,
 						0.3D,
@@ -81,7 +81,7 @@ public class GPSCompass implements Listener {
 				p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1.0f);
 			}
 
-			p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(Util.fixColor("&6"+ (int)dist + "m away from " + waypointName)));
+			p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacy(Util.fixColor("&6"+ (int)dist + "m away from " + waypointName)));
 
 		}
 	}
