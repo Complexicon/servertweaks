@@ -92,10 +92,10 @@ public class GPSCompass implements Listener {
 		List<NamedLocation> data = Util.getPersistentSerializable(p, gpsWaypoints, empty.getClass());
 		if (data == null) return empty;
 
-		return data
+		return new ArrayList<>(data
 			.stream()
 			.filter(v->p.getWorld().getUID().equals(v.dimension))  // dont display waypoints that are not in the current dimension 
-			.toList();
+			.toList());
 	}
 
 	public void setWaypoints(Player p, List<NamedLocation> newData) {
