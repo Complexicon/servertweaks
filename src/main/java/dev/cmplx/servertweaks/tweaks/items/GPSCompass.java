@@ -175,7 +175,7 @@ public class GPSCompass implements Listener {
 		if (!Util.getPersistentBool(item.getItemMeta(), gpsEnabled)) return false;
 		if (((CompassMeta)item.getItemMeta()).getLodestone() == null) return false; // has no tracked location
 		
-		stopTracking(p);
+		trackingPlayers.remove(p);
 		return true;
 	}
 
