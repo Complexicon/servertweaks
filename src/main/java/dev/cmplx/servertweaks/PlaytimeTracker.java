@@ -20,6 +20,8 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Team;
 
+import dev.cmplx.servertweaks.commands.AfkCommand;
+
 public class PlaytimeTracker implements Listener {
 
     private static Objective playtimeSec;
@@ -33,6 +35,10 @@ public class PlaytimeTracker implements Listener {
 		playtimeWeek.unregister();
 		playtimeWeek = Util.getObjectiveSafe("playtimeWeek");
 		Log.info("Reset all Weekly Playtime Limits.");
+	}
+
+	public static int getPlaytimeMinutes(Player p) {
+		return playtimeMin.getScore(p.getName()).getScore();
 	}
 
 	public static void init() {
@@ -93,15 +99,36 @@ public class PlaytimeTracker implements Listener {
 		e.getPlayer().setSpectatorTarget(null);
 	}
 
+	public static void setAFK(Player p) {
+		Bukkit.broadcastMessage(Util.fixColor(Config.afkMessage.replace("{player}", p.getName())));
+		afkTeam.addEntry(p.getName());
+		Util.setMetadata(p, "afkGamemode", p.getGameMode());
+		p.setGameMode(GameMode.SPECTATOR);
+	}
+
+	public static boolean isAFK(Player p) {
+		return afkTeam.hasEntry(p.getName());
+	}
+
+	public static void unAFK(Player p) {
+		afkTeam.removeEntry(p.getName());
+
+		var oldGamemode = Util.getMetadata(p, "afkGamemode", GameMode.class);
+		p.setGameMode(oldGamemode != null ? oldGamemode : GameMode.SURVIVAL);
+
+		Bukkit.broadcastMessage(Util.fixColor(Config.afkReturnMessage.replace("{player}", p.getName())));
+		String party = Util.getPersistentString(p, new NamespacedKey(Main.pluginRef, "party"));
+		if(party != null) {
+			Util.getTeamSafe(party).addEntry(p.getName());
+		}
+	}
+
 	private static void handlePlaytime(Player p) {
 		
 		int afkTime = afkTimer.getScore(p.getName()).getScore();
 
-		if(afkTime == Config.afkTime - 1) {
-			Bukkit.broadcastMessage(Util.fixColor(Config.afkMessage.replace("{player}", p.getName())));
-			afkTeam.addEntry(p.getName());
-			Util.setMetadata(p, "afkGamemode", p.getGameMode());
-			p.setGameMode(GameMode.SPECTATOR);
+		if(afkTime == Config.afkTime - 1 && !Util.getPersistentBool(p, AfkCommand.stopAutoAFK)) {
+			setAFK(p);
 		}
 
 		if(afkTime <= Config.afkTime) Util.modifyScore(afkTimer.getScore(p.getName()), old -> old + 1);
@@ -148,17 +175,8 @@ public class PlaytimeTracker implements Listener {
 			String name = e.getPlayer().getName();
 			Util.modifyScore(afkTimer.getScore(name), val -> 0);
 
-			if(afkTeam.hasEntry(name)) {
-				afkTeam.removeEntry(name);
-
-				var oldGamemode = Util.getMetadata(e.getPlayer(), "afkGamemode", GameMode.class);
-				e.getPlayer().setGameMode(oldGamemode != null ? oldGamemode : GameMode.SURVIVAL);
-
-				Bukkit.broadcastMessage(Util.fixColor(Config.afkReturnMessage.replace("{player}", name)));
-				String party = Util.getPersistentString(e.getPlayer(), new NamespacedKey(Main.pluginRef, "party"));
-				if(party != null) {
-					Util.getTeamSafe(party).addEntry(name);
-				}
+			if(isAFK(e.getPlayer())) {
+				unAFK(e.getPlayer());
 			}
 
 		}

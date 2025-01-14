@@ -32,7 +32,13 @@ public class TabListHelper implements Runnable, Listener {
 		topStats += "&7TPS: &6" + String.format("%.2f", curTPS);
 		topStats += " &7Ping: &6" + p.getPing() + "ms";
 		topStats += " &7Entities: &6" + p.getWorld().getEntities().size();
-		
+
+		var mins = PlaytimeTracker.getPlaytimeMinutes(p);
+		var hours = mins / 60;
+		mins = mins % 60;
+
+		topStats += "\n&7Deine Spielzeit: &6" + hours + "h " + mins + "min";
+
 		footer.add(topStats);
 
 		if(Config.enableWeeklyLimit) {
@@ -49,11 +55,11 @@ public class TabListHelper implements Runnable, Listener {
 	
 			int remainingTime = Config.weeklyLimit - alreadyPlayed;
 	
-			int hours = remainingTime / 3600;
+			int remaininghours = remainingTime / 3600;
 			int minutes = (remainingTime % 3600) / 60;
 			int seconds = remainingTime % 60;
 
-			footer.add("&7Deine übrige Spielzeit: " + color + String.format("%02d:%02d:%02d", hours, minutes, seconds));
+			footer.add("&7Deine übrige Spielzeit: " + color + String.format("%02d:%02d:%02d", remaininghours, minutes, seconds));
 		}
 
 		footer.add("");

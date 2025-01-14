@@ -1,5 +1,6 @@
 package dev.cmplx.servertweaks;
 
+import dev.cmplx.servertweaks.commands.AfkCommand;
 import dev.cmplx.servertweaks.commands.DebugItemsCommand;
 import dev.cmplx.servertweaks.commands.PartyCommand;
 import dev.cmplx.servertweaks.commands.TestCommand;
@@ -13,6 +14,9 @@ public class CommandManager {
 
 		Main.pluginRef.getCommand("debugitems").setExecutor(new DebugItemsCommand());
 		Main.pluginRef.getCommand("testcmd").setExecutor(new TestCommand());
+
+		Main.pluginRef.getCommand("afk").setExecutor(new AfkCommand());
+
 	}
 
 }

@@ -18,7 +18,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
@@ -49,6 +49,16 @@ public class GPSCompass implements Listener {
 		Bukkit.getScheduler().runTaskTimer(Main.pluginRef, () -> updateTrackings(), 0, 10); // update trackings every 500ms (10 ticks)
 	}
 
+	void stopTracking(Player p) {
+		var compass = trackingPlayers.get(p);
+		if(compass == null) return;
+		var compassMeta = (CompassMeta) compass.getItemMeta();
+		trackingPlayers.remove(p);
+		compassMeta.setLodestone(null);
+		compassMeta.setLodestoneTracked(true);
+		compass.setItemMeta(compassMeta);
+	}
+
 	void updateTrackings() {
 		for (var entry : trackingPlayers.entrySet()) {
 			var p = entry.getKey();
@@ -56,6 +66,11 @@ public class GPSCompass implements Listener {
 			var compassMeta = (CompassMeta) compass.getItemMeta();
 			var targetLoc = compassMeta.getLodestone();
 			var waypointName = Util.getPersistentString(compassMeta, gpsCurrentTracking);
+
+			if (!p.getLocation().getWorld().getUID().equals(targetLoc.getWorld().getUID())) {
+				stopTracking(p);
+				return;
+			}
 
 			var dist = p.getLocation().distance(targetLoc);
 
@@ -75,9 +90,7 @@ public class GPSCompass implements Listener {
 			}
 
 			if (dist < 10) { // auto stop tracking if in close proximity
-				trackingPlayers.remove(p);
-				compassMeta.setLodestone(null);
-				compass.setItemMeta(compassMeta);
+				stopTracking(p);
 				p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1.0f);
 			}
 
@@ -121,7 +134,7 @@ public class GPSCompass implements Listener {
 		for (var info : curWaypoints) {
 
 			var lore = new ArrayList<>(info.prettyPrint());
-			lore.add("&d&o(Mausrad zum Entfernen klicken)");
+			lore.add("&d&o(Q zum Entfernen drücken)");
 
 			var displayItem = new ItemStackBuilder(Material.PAPER)
 				.setName(info.name)
@@ -131,7 +144,7 @@ public class GPSCompass implements Listener {
 			gui.addItem(displayItem, e -> {
 				var player = (Player) e.getWhoClicked();
 				
-				if (e.getClick() == ClickType.MIDDLE) {
+				if (e.getAction() == InventoryAction.DROP_ONE_SLOT) {
 					var waypoints = getWaypoints(p);
 					waypoints.remove(waypoints.indexOf(info));
 					setWaypoints(p, waypoints);
@@ -162,7 +175,7 @@ public class GPSCompass implements Listener {
 		if (!Util.getPersistentBool(item.getItemMeta(), gpsEnabled)) return false;
 		if (((CompassMeta)item.getItemMeta()).getLodestone() == null) return false; // has no tracked location
 		
-		trackingPlayers.remove(p);
+		stopTracking(p);
 		return true;
 	}
 

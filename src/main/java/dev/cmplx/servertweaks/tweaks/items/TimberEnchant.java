@@ -48,25 +48,46 @@ public class TimberEnchant implements Listener {
 		if(!Util.getPersistentBool(second.getItemMeta(), timberEntchant))
 			return;
 
-		var axe = first.clone();
-		var meta = axe.getItemMeta();
+		if (e.getResult() == null) {
+			var axe = first.clone();
+			var meta = axe.getItemMeta();
+	
+			var lore = Arrays.asList(Util.fixColor("&6Timber Verzauberung"));
+	
+			if(meta.hasLore()) {
+				lore = meta.getLore();
+				lore.add(0, Util.fixColor("&6Timber Verzauberung"));
+			}
+	
+			meta.setLore(lore);
+			
+			Util.setPersistent(meta, timberEntchant, true);
+	
+			axe.setItemMeta(meta);
+	
+			e.getView().setRepairCost(0);
+	
+			e.setResult(axe);
+		} else { // fix crafting together 2 axes with timber "enchant"
 
-		var lore = Arrays.asList(Util.fixColor("&6Timber Verzauberung"));
+			var resultAxe = e.getResult();
 
-		if(meta.hasLore()) {
-			lore = meta.getLore();
-			lore.add(0, Util.fixColor("&6Timber Verzauberung"));
+			var meta = resultAxe.getItemMeta();
+
+			var lore = Arrays.asList(Util.fixColor("&6Timber Verzauberung"));
+	
+			if(meta.hasLore()) {
+				lore = meta.getLore();
+				lore.add(0, Util.fixColor("&6Timber Verzauberung"));
+			}
+
+			meta.setLore(lore);
+			Util.setPersistent(meta, timberEntchant, true);
+
+			resultAxe.setItemMeta(meta);
+
 		}
 
-		meta.setLore(lore);
-		
-		Util.setPersistent(meta, timberEntchant, true);
-
-		axe.setItemMeta(meta);
-
-		e.getView().setRepairCost(0);
-
-		e.setResult(axe);
 
 	}
 
