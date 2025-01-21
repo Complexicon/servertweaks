@@ -21,6 +21,7 @@ public class SneakyMobs implements Listener {
 			if(interactItem.getType() == Material.LEATHER_BOOTS && itemMeta.hasDisplayName() && itemMeta.getDisplayName().equals("sneaky boots")) {
 				mob.setCustomName("sneaky " + mob.getName());
 				mob.getEquipment().setBoots(interactItem);
+				mob.setRemoveWhenFarAway(false); // prevent despanwing, mob has item
 				e.getRightClicked().setSilent(true);
 				e.getPlayer().getInventory().setItem(e.getHand(), new ItemStack(Material.AIR));
 				e.setCancelled(true);

@@ -5,10 +5,15 @@ import java.util.List;
 
 public class Config {
 
+	private Config() {} // disable instance creation
+
 	public static int weeklyLimit = 60 * 60 * 24;
 	public static boolean enableWeeklyLimit = true;
 	public static String playtimeResetCronjob = "0 1 * * MON";
 	public static String playtimeLimitReachedMessage = "§4You have reached your weekly playtime limit.";
+
+	public static boolean scheduledServerShutdown = false;
+	public static String scheduledServerShutdownCronjob = "0 1 * * *";
 
 	public static String joinMessage = "&a{player} joined.";
 	public static String leaveMessage = "&c{player} left.";

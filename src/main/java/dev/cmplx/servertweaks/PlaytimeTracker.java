@@ -114,6 +114,7 @@ public class PlaytimeTracker implements Listener {
 		afkTeam.removeEntry(p.getName());
 
 		var oldGamemode = Util.getMetadata(p, "afkGamemode", GameMode.class);
+		if (oldGamemode == GameMode.SPECTATOR) oldGamemode = GameMode.SURVIVAL; // afk stuck in spectator fix
 		p.setGameMode(oldGamemode != null ? oldGamemode : GameMode.SURVIVAL);
 
 		Bukkit.broadcastMessage(Util.fixColor(Config.afkReturnMessage.replace("{player}", p.getName())));

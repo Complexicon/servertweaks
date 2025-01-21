@@ -56,6 +56,7 @@ public class Main extends JavaPlugin {
 		PlaytimeTracker.init();
 		CraftingCustomizer.init();
 		InventoryGUI.init();
+		// ScheduledShutdown.init();
 
 		Util.getObjectiveSafe("deathCounter", "Tode", Criteria.DEATH_COUNT, DisplaySlot.PLAYER_LIST);
 
