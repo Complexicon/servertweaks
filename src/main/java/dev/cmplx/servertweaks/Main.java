@@ -28,6 +28,7 @@ import dev.cmplx.servertweaks.tweaks.entities.SneakyMobs;
 import dev.cmplx.servertweaks.tweaks.entities.WanderingTraderModifier;
 import dev.cmplx.servertweaks.tweaks.items.ArmoredElytra;
 import dev.cmplx.servertweaks.tweaks.items.GPSCompass;
+import dev.cmplx.servertweaks.tweaks.items.SoulboundEnchant;
 import dev.cmplx.servertweaks.tweaks.items.TimberEnchant;
 
 public class Main extends JavaPlugin {
@@ -93,6 +94,7 @@ public class Main extends JavaPlugin {
 		registerWhen(Config.anvilColorCodes, 	AnvilRename.class);
 		registerWhen(Config.teleportAnchors, 	TeleportAnchor.class);
 		registerWhen(Config.gpsCompass, 		GPSCompass.class);
+		registerWhen(Config.soulboundBook, 		SoulboundEnchant.class);
 
 		Log.info("Startup Complete");
 	}

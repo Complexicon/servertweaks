@@ -10,6 +10,7 @@ import org.bukkit.loot.LootTables;
 
 import dev.cmplx.servertweaks.Config;
 import dev.cmplx.servertweaks.tweaks.blocks.TeleportAnchor;
+import dev.cmplx.servertweaks.tweaks.items.SoulboundEnchant;
 import dev.cmplx.servertweaks.tweaks.items.TimberEnchant;
 
 public class LootGenerateHook implements Listener {
@@ -39,6 +40,12 @@ public class LootGenerateHook implements Listener {
 			if(Config.timberMod)
 				addItemWithChance(e, Config.chanceTimberEnchant, TimberEnchant.timberBook);
 		}
+
+		if (isLootTable(e, LootTables.END_CITY_TREASURE)) {
+			if (Config.soulboundBook)
+				addItemWithChance(e, Config.chanceSoulbound, SoulboundEnchant.book);
+		}
+
 	}
 
 }

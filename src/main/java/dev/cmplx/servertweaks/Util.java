@@ -23,6 +23,7 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Server;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -80,6 +81,51 @@ public class Util {
 
 
 		Main.pluginRef.saveConfig();
+	}
+
+	public static void applyCustomBook(PrepareAnvilEvent e, NamespacedKey enchantmentKey, String enchantmentDisplayName) {
+		var anvil = e.getInventory();
+		var first = anvil.getItem(0);
+
+		if (e.getResult() == null) {
+			var item = first.clone();
+			var meta = item.getItemMeta();
+	
+			var lore = Arrays.asList(Util.fixColor(enchantmentDisplayName));
+	
+			if(meta.hasLore()) {
+				lore = meta.getLore();
+				lore.add(0, Util.fixColor(enchantmentDisplayName));
+			}
+	
+			meta.setLore(lore);
+			
+			Util.setPersistent(meta, enchantmentKey, true);
+	
+			item.setItemMeta(meta);
+	
+			e.getView().setRepairCost(0);
+	
+			e.setResult(item);
+		} else { // fix crafting together 2 items with timber "enchant"
+
+			var resultItem = e.getResult();
+
+			var meta = resultItem.getItemMeta();
+
+			var lore = Arrays.asList(Util.fixColor(enchantmentDisplayName));
+	
+			if(meta.hasLore()) {
+				lore = meta.getLore();
+				lore.add(0, Util.fixColor(enchantmentDisplayName));
+			}
+
+			meta.setLore(lore);
+			Util.setPersistent(meta, enchantmentKey, true);
+
+			resultItem.setItemMeta(meta);
+
+		}
 	}
 
 	public static void saveConfig() {

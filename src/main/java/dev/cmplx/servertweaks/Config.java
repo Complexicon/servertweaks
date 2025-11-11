@@ -46,8 +46,10 @@ public class Config {
 	public static boolean gpsCompass = true;
 	public static boolean teleportAnchors = true;
 	public static boolean anvilColorCodes = true;
+	public static boolean soulboundBook = true;
 
 	public static int chanceTimberEnchant = 25;
+	public static int chanceSoulbound = 10;
 	public static int chanceTeleportBook = 25;
 
 	public static String motdHeader = "&cExample Message of the &bDay";
