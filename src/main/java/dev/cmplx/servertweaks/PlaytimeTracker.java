@@ -75,7 +75,7 @@ public class PlaytimeTracker implements Listener {
 
 		}));
 
-		playtimeDisplay = Util.getObjectiveSafe("playtimeDisplay", "§6Spielzeit - Top 5", Criteria.DUMMY, DisplaySlot.SIDEBAR);
+		playtimeDisplay = Util.getObjectiveSafe("playtimeDisplay", i18n.PLAYTIME_LEADERBOARD_HEADING.get(), Criteria.DUMMY, DisplaySlot.SIDEBAR);
 
 		playtimeSec = Util.getObjectiveSafe("playtimeSec");
 		playtimeMin = Util.getObjectiveSafe("playtimeMin");
@@ -100,7 +100,7 @@ public class PlaytimeTracker implements Listener {
 	}
 
 	public static void setAFK(Player p) {
-		Bukkit.broadcastMessage(Util.fixColor(Config.afkMessage.replace("{player}", p.getName())));
+		Bukkit.broadcastMessage(i18n.AFK_MESSAGE.fmt(i18n.param("player", p.getName())));
 		afkTeam.addEntry(p.getName());
 		Util.setMetadata(p, "afkGamemode", p.getGameMode());
 		p.setGameMode(GameMode.SPECTATOR);
@@ -117,7 +117,7 @@ public class PlaytimeTracker implements Listener {
 		if (oldGamemode == GameMode.SPECTATOR) oldGamemode = GameMode.SURVIVAL; // afk stuck in spectator fix
 		p.setGameMode(oldGamemode != null ? oldGamemode : GameMode.SURVIVAL);
 
-		Bukkit.broadcastMessage(Util.fixColor(Config.afkReturnMessage.replace("{player}", p.getName())));
+		Bukkit.broadcastMessage(i18n.AFK_RETURN_MESSAGE.fmt(i18n.param("player", p.getName())));
 		String party = Util.getPersistentString(p, new NamespacedKey(Main.pluginRef, "party"));
 		if(party != null) {
 			Util.getTeamSafe(party).addEntry(p.getName());
@@ -146,7 +146,7 @@ public class PlaytimeTracker implements Listener {
 
 		Util.modifyScore(playtimeWeek.getScore(p.getName()), oldVal -> {
 			if(Config.enableWeeklyLimit && oldVal + 1 >= Config.weeklyLimit)
-				p.kickPlayer(Config.playtimeLimitReachedMessage);
+				p.kickPlayer(i18n.PLAYTIME_LIMIT_REACHED_MESSAGE.get());
 
 			return oldVal + 1;
 		});
@@ -160,7 +160,7 @@ public class PlaytimeTracker implements Listener {
 	@EventHandler
 	public void onConnect(PlayerLoginEvent e) {
 		if(Config.enableWeeklyLimit && getWeekPlaytime(e.getPlayer()) >= Config.weeklyLimit) {
-			e.disallow(PlayerLoginEvent.Result.KICK_OTHER, Config.playtimeLimitReachedMessage);
+			e.disallow(PlayerLoginEvent.Result.KICK_OTHER, i18n.PLAYTIME_LIMIT_REACHED_MESSAGE.get());
 		}
 	}
 

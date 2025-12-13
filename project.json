@@ -1,6 +1,6 @@
 {
     "name": "servertweaks",
-    "minecraftVersion": "1.21.3",
+    "minecraftVersion": "1.21.10",
     "mvnRepos": [],
     "dependencies": []
 }

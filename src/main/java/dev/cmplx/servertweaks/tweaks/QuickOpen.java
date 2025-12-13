@@ -4,6 +4,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.MenuType;
 
 import dev.cmplx.servertweaks.Config;
 
@@ -17,7 +18,7 @@ public class QuickOpen implements Listener {
 		switch (e.getPlayer().getInventory().getItemInMainHand().getType()) {
 			case CRAFTING_TABLE:
 				if(!Config.shiftOpenCraft) return;
-				e.getPlayer().openWorkbench(null, true);
+				e.getPlayer().openInventory(MenuType.CRAFTING.builder().build(e.getPlayer()));
 				break;
 			case ENDER_CHEST:
 				if(!Config.shiftOpenEnder) return;

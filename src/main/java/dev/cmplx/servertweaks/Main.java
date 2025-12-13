@@ -10,6 +10,7 @@ import dev.cmplx.servertweaks.tweaks.AnvilRename;
 import dev.cmplx.servertweaks.tweaks.CauldronConcrete;
 import dev.cmplx.servertweaks.tweaks.CraftingCustomizer;
 import dev.cmplx.servertweaks.tweaks.DiscordIntegration;
+import dev.cmplx.servertweaks.tweaks.LeashableVillagers;
 import dev.cmplx.servertweaks.tweaks.LootGenerateHook;
 import dev.cmplx.servertweaks.tweaks.MultiplayerSleep;
 import dev.cmplx.servertweaks.tweaks.QuickOpen;
@@ -95,6 +96,7 @@ public class Main extends JavaPlugin {
 		registerWhen(Config.teleportAnchors, 	TeleportAnchor.class);
 		registerWhen(Config.gpsCompass, 		GPSCompass.class);
 		registerWhen(Config.soulboundBook, 		SoulboundEnchant.class);
+		registerWhen(Config.leashableVillagers, LeashableVillagers.class);
 
 		Log.info("Startup Complete");
 	}

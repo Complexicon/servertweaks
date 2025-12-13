@@ -14,6 +14,7 @@ public class CauldronConcrete implements Listener {
 
 		if(e.getClickedBlock() == null) return;
 
+		@SuppressWarnings("deprecation")
 		String materialKey = e.getMaterial().getKey().getKey();
 
 		if(e.getClickedBlock().getType() == Material.WATER_CAULDRON && materialKey.endsWith("concrete_powder")) {

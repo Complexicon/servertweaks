@@ -37,6 +37,7 @@ public class HopperFilter implements Listener {
 
             if (customName != null) {
 
+                @SuppressWarnings("deprecation")
                 String itemName = event.getItem().getType().getKey().getKey();
                 if (!filterMatch(customName, itemName)) {
                     event.setCancelled(true);
@@ -53,6 +54,8 @@ public class HopperFilter implements Listener {
             String customName = ((Container) event.getInventory().getHolder()).getCustomName();
 
             if (customName != null) {
+                
+                @SuppressWarnings("deprecation")
                 String itemName = event.getItem().getItemStack().getType().getKey().getKey();
                 if (!filterMatch(customName, itemName)) {
                     event.setCancelled(true);

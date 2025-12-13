@@ -7,10 +7,10 @@
 	],
 	"java.project.referencedLibraries": {
 		"include": [
-			"C:\\Users\\Terminal\\.yoko\\api\\api-1.21.3.jar"
+			"C:\\Users\\Terminal\\.yoko\\api\\api-1.21.10.jar"
 		],
 		"sources": {
-			"C:\\Users\\Terminal\\.yoko\\api\\api-1.21.3.jar": "C:\\Users\\Terminal\\.yoko\\api\\src-1.21.3.jar"
+			"C:\\Users\\Terminal\\.yoko\\api\\api-1.21.10.jar": "C:\\Users\\Terminal\\.yoko\\api\\src-1.21.10.jar"
 		}
 	},
 	"java.project.sourcePaths": [

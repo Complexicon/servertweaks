@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.IntFunction;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -59,6 +60,12 @@ public class Util {
 			for (Field f : configFields) {
 				conf.addDefault(f.getName(), f.get(null));
 			}
+
+			var translatables = Arrays.stream(i18n.values()).collect(Collectors.toMap(Enum::name, status -> status));
+
+			for (var translatable : translatables.entrySet()) {
+				conf.addDefault("translation."+translatable.getKey(), translatable.getValue().get());
+			}
 	
 			conf.options().copyDefaults(true);
 	
@@ -73,6 +80,11 @@ public class Util {
 				}
 	
 			}
+
+			for (var translatable : translatables.entrySet()) {
+				translatable.getValue().updateTranslation(conf.getString("translation."+translatable.getKey(), translatable.getValue().get()));
+			}
+
 		} catch(Exception e) {
 			e.printStackTrace();
 			Log.error("failed to setup config!");
