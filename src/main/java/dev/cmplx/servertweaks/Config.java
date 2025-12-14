@@ -11,9 +11,6 @@ public class Config {
 	public static boolean enableWeeklyLimit = true;
 	public static String playtimeResetCronjob = "0 1 * * MON";
 	
-	public static boolean scheduledServerShutdown = false;
-	public static String scheduledServerShutdownCronjob = "0 1 * * *";
-	
 	public static String deathMessageFormat = "&4{deathMessage}";
 	public static String chatMessageFormat = "&b{player}&f: {message}";
 

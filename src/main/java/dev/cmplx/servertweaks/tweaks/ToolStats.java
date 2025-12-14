@@ -18,25 +18,26 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import dev.cmplx.servertweaks.Main;
 import dev.cmplx.servertweaks.Util;
+import dev.cmplx.servertweaks.i18n;
 
 public class ToolStats implements Listener {
 	
 	static NamespacedKey statsKey = new NamespacedKey(Main.pluginRef, "toolStat");
 
-	public static void updateStats(ItemStack curItem, String prefix, int toAdd) {
+	public static void incrementStat(ItemStack curItem, i18n prefix) {
 		ItemMeta itemMeta = curItem.getItemMeta();
 
 		Integer stats = Util.getPersistentInt(itemMeta, statsKey);
 		if(stats == null) stats = 0;
-		stats += toAdd;
+		stats += 1;
 		Util.setPersistent(itemMeta, statsKey, stats);
 
-		var newKilled = Util.fixColor(prefix + stats);
+		var newKilled = prefix.fmt(i18n.param("count", stats.toString()));
 		var newLore = Arrays.asList(newKilled);
 		
 		if(itemMeta.hasLore()) {
 			var lore = itemMeta.getLore();
-			var unprefixed = ChatColor.stripColor(Util.fixColor(prefix));
+			var unprefixed = ChatColor.stripColor(prefix.fmt(i18n.param("count", "")));
 			Optional<String> toReplace = lore.stream().filter(v -> v.contains(unprefixed)).findFirst();
 			if(toReplace.isPresent()) {
 				newLore = lore;
@@ -67,7 +68,7 @@ public class ToolStats implements Listener {
 		if(!(isBow || isCrossbow || isTrident || isSword || isTool)) return;
 
 		var meta = curItem.getItemMeta();
-		meta.setLore(Arrays.asList(Util.fixColor("&7Crafted by: &f" + p.getName())));
+		meta.setLore(Arrays.asList(i18n.TOOLSTATS_CRAFTED_BY.fmt(i18n.param("player", p.getName()))));
 		curItem.setItemMeta(meta);
 	}
 
@@ -86,7 +87,7 @@ public class ToolStats implements Listener {
 
 		if(!(isBow || isCrossbow || isTrident || isSword)) return;
 
-		updateStats(curItem, "&7Kills: &a", 1);
+		incrementStat(curItem, i18n.TOOLSTATS_KILLS);
 	}
 
 	@EventHandler
@@ -96,7 +97,7 @@ public class ToolStats implements Listener {
 
 		if(!EnchantmentTarget.TOOL.includes(curItem)) return;
 
-		updateStats(curItem, "&7Broken Blocks: &a", 1);
+		incrementStat(curItem, i18n.TOOLSTATS_BROKEN_BLOCKS);
 
 	}
 

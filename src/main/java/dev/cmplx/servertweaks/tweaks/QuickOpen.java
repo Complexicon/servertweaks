@@ -1,5 +1,6 @@
 package dev.cmplx.servertweaks.tweaks;
 
+import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -15,14 +16,18 @@ public class QuickOpen implements Listener {
 		if (e.getAction() != Action.RIGHT_CLICK_AIR) return;
 		if (!e.getPlayer().isSneaking()) return;
 
-		switch (e.getPlayer().getInventory().getItemInMainHand().getType()) {
+		var p = e.getPlayer();
+
+		switch (p.getInventory().getItemInMainHand().getType()) {
 			case CRAFTING_TABLE:
 				if(!Config.shiftOpenCraft) return;
-				e.getPlayer().openInventory(MenuType.CRAFTING.builder().build(e.getPlayer()));
+				p.playSound(p.getLocation(), Sound.ENTITY_HORSE_ARMOR, 1, 1);
+				p.openInventory(MenuType.CRAFTING.builder().build(p));
 				break;
 			case ENDER_CHEST:
 				if(!Config.shiftOpenEnder) return;
-				e.getPlayer().openInventory(e.getPlayer().getEnderChest());
+				p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_TELEPORT, 1, 2);
+				p.openInventory(p.getEnderChest());
 				break;
 			default:
 				break;

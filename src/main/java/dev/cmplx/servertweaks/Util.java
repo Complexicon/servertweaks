@@ -9,12 +9,15 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.IntFunction;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
@@ -241,6 +244,19 @@ public class Util {
 	public static void setPersistent(PersistentDataHolder holder, NamespacedKey key, int value) {
 		holder.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, value);
 	}
+
+	static final Pattern __commandParser = Pattern.compile("\"([^\"]*)\"|([^\\s\"]+)");
+	public static String[] parseCommandArgs(String[] args) {
+        Matcher matcher = __commandParser.matcher(String.join(" ", args));
+        
+        List<String> result = new ArrayList<>();
+        
+        while (matcher.find()) {
+			result.add(matcher.group(matcher.group(1) != null ? 1 : 2));
+        }
+        
+        return result.toArray(new String[0]);
+    }
 
 	public static String toColorCode(DyeColor c) {
 		switch (c) {

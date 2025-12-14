@@ -41,6 +41,10 @@ public class PlaytimeTracker implements Listener {
 		return playtimeMin.getScore(p.getName()).getScore();
 	}
 
+	public static int getPlaytimeMinutes(String playerName) {
+		return playtimeMin.getScore(playerName).getScore();
+	}
+
 	public static void init() {
 		if(Config.enableWeeklyLimit) {
 			Cron.add(new Cron.Job(Config.playtimeResetCronjob, () -> clearWeekPlaytime()));
@@ -75,7 +79,7 @@ public class PlaytimeTracker implements Listener {
 
 		}));
 
-		playtimeDisplay = Util.getObjectiveSafe("playtimeDisplay", i18n.PLAYTIME_LEADERBOARD_HEADING.get(), Criteria.DUMMY, DisplaySlot.SIDEBAR);
+		playtimeDisplay = Util.getObjectiveSafe("playtimeDisplay", i18n.PLAYTIME_LEADERBOARD_HEADING.fmt(), Criteria.DUMMY, DisplaySlot.SIDEBAR);
 
 		playtimeSec = Util.getObjectiveSafe("playtimeSec");
 		playtimeMin = Util.getObjectiveSafe("playtimeMin");
@@ -146,7 +150,7 @@ public class PlaytimeTracker implements Listener {
 
 		Util.modifyScore(playtimeWeek.getScore(p.getName()), oldVal -> {
 			if(Config.enableWeeklyLimit && oldVal + 1 >= Config.weeklyLimit)
-				p.kickPlayer(i18n.PLAYTIME_LIMIT_REACHED_MESSAGE.get());
+				p.kickPlayer(i18n.PLAYTIME_LIMIT_REACHED_MESSAGE.fmt());
 
 			return oldVal + 1;
 		});
@@ -160,7 +164,7 @@ public class PlaytimeTracker implements Listener {
 	@EventHandler
 	public void onConnect(PlayerLoginEvent e) {
 		if(Config.enableWeeklyLimit && getWeekPlaytime(e.getPlayer()) >= Config.weeklyLimit) {
-			e.disallow(PlayerLoginEvent.Result.KICK_OTHER, i18n.PLAYTIME_LIMIT_REACHED_MESSAGE.get());
+			e.disallow(PlayerLoginEvent.Result.KICK_OTHER, i18n.PLAYTIME_LIMIT_REACHED_MESSAGE.fmt());
 		}
 	}
 

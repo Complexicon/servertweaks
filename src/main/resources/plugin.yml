@@ -9,5 +9,9 @@ commands:
     description: "Toggle AFK State"
   debugitems:
     description: "Get inventory full of debug items"
+  playtime:
+    description: "Lists all Player Playtimes"
+  scheduleshutdown:
+    description: "Schedules a server Shutdown"
   testcmd:
     description: ""

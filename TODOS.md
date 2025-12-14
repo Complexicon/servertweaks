@@ -1,5 +1,2 @@
-- GPS Kompass
 - Villager Markt
-- ToolStats ausbauen
 - Teleport Anchors verbessern
-- Soulbound Verzauberung

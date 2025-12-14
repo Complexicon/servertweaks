@@ -12,9 +12,13 @@ public enum i18n {
 	DEATH_MESSAGE("&4{deathMessage}"),
 	AFK_MESSAGE("&7{player} is now AFK"),
 	AFK_RETURN_MESSAGE("&7{player} is no longer AFK"),
-	PLAYTIME_LEADERBOARD_HEADING("&6Playtime - Top 5");
+	PLAYTIME_LEADERBOARD_HEADING("&6Playtime - Top 5"),
+	TOOLSTATS_CRAFTED_BY("&7Crafted by: &f{player}"),
+	TOOLSTATS_BROKEN_BLOCKS("&7Broken Blocks: &a{count}"),
+	TOOLSTATS_KILLS("&7Kills: &a{count}"),
+	SERVER_SHUTDOWN_COUNTDOWN("&cServer shutting down in {countdown}"),
 
-	/*
+	;/*
 	
 		INTERNALS
 	
