@@ -40,6 +40,7 @@ public class Config {
 	public static boolean teleportAnchors = true;
 	public static boolean anvilColorCodes = true;
 	public static boolean soulboundBook = true;
+	public static boolean refillableRocket = true;
 
 	public static int chanceTimberEnchant = 25;
 	public static int chanceSoulbound = 10;

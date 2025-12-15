@@ -1,9 +1,7 @@
 package dev.cmplx.servertweaks.tweaks;
 
 import java.util.Arrays;
-import java.util.Optional;
 
-import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.EnchantmentTarget;
 import org.bukkit.entity.LivingEntity;
@@ -16,6 +14,7 @@ import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import dev.cmplx.servertweaks.LoreUtil;
 import dev.cmplx.servertweaks.Main;
 import dev.cmplx.servertweaks.Util;
 import dev.cmplx.servertweaks.i18n;
@@ -31,25 +30,9 @@ public class ToolStats implements Listener {
 		if(stats == null) stats = 0;
 		stats += 1;
 		Util.setPersistent(itemMeta, statsKey, stats);
-
-		var newKilled = prefix.fmt(i18n.param("count", stats.toString()));
-		var newLore = Arrays.asList(newKilled);
-		
-		if(itemMeta.hasLore()) {
-			var lore = itemMeta.getLore();
-			var unprefixed = ChatColor.stripColor(prefix.fmt(i18n.param("count", "")));
-			Optional<String> toReplace = lore.stream().filter(v -> v.contains(unprefixed)).findFirst();
-			if(toReplace.isPresent()) {
-				newLore = lore;
-				newLore.set(lore.indexOf(toReplace.get()), newKilled);
-			} else {
-				lore.addAll(newLore);
-				newLore = lore;
-			}
-		}
-
-		itemMeta.setLore(newLore);
 		curItem.setItemMeta(itemMeta);
+
+		LoreUtil.updateEntry(v -> v.startsWith(prefix.fmt(i18n.param("count", ""))), prefix.fmt(i18n.param("count", stats.toString())), curItem);
 	}
 
 	@EventHandler

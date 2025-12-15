@@ -1,7 +1,6 @@
 package dev.cmplx.servertweaks.commands;
 
 import org.bukkit.Material;
-import org.bukkit.block.Sign;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -35,20 +34,9 @@ public class TestCommand  implements CommandExecutor {
 		}
 		Player p = (Player)sender;
 
-		var b = p.getWorld().getBlockAt(0, 255, 0);
-		b.setType(Material.OAK_SIGN);
-		p.openSign((Sign)b.getState());
-		b.setType(Material.AIR);
+		var r = new ItemStack(Material.FIREWORK_ROCKET);
 
-		// try {
-		// 	p.openInventory(new TestGUI().getInventory());
-		// } catch (Exception e) {
-		// 	e.printStackTrace();
-		// }
-
-		// p.openInventory(new TextInput("test input", true, data -> {
-		// 	Log.debug(data.getKey() + " aux item: " + data.getValue());
-		// }).getInventory());
+		p.getInventory().addItem(r);
 
 		return true;
 

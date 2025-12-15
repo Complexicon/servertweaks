@@ -17,6 +17,9 @@ public enum i18n {
 	TOOLSTATS_BROKEN_BLOCKS("&7Broken Blocks: &a{count}"),
 	TOOLSTATS_KILLS("&7Kills: &a{count}"),
 	SERVER_SHUTDOWN_COUNTDOWN("&cServer shutting down in {countdown}"),
+	ROCKET_CHARGES_REMAINING("&7Remaining Charges: {charges}"),
+	ITEM_REFILLABLE_ROCKET("&dRefillable Rocket"),
+	GPS_NAV_TEXT("&6{meters}m away from {waypoint}"),
 
 	;/*
 	
@@ -58,6 +61,10 @@ public enum i18n {
 
 	public static TranslationMapping param(String key, String value) {
 		return new TranslationMapping(key, value);
+	}
+
+	public static TranslationMapping param(String key, Object value) {
+		return new TranslationMapping(key, value.toString());
 	}
 
 }

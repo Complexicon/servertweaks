@@ -1,14 +1,11 @@
 package dev.cmplx.servertweaks.tweaks.items;
 
-import java.util.List;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.attribute.AttributeModifier.Operation;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -23,7 +20,9 @@ import org.bukkit.inventory.SmithingRecipe;
 import org.bukkit.inventory.SmithingTransformRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import dev.cmplx.servertweaks.LoreUtil;
 import dev.cmplx.servertweaks.Main;
+import dev.cmplx.servertweaks.Util;
 
 public class ArmoredElytra implements Listener {
 
@@ -46,25 +45,15 @@ public class ArmoredElytra implements Listener {
 
 	@EventHandler
 	void onItemBurn(EntityDamageEvent e) {
-		if(e.getCause() == DamageCause.LAVA  || e.getCause() == DamageCause.FIRE) {
-			if(e.getEntityType() == EntityType.ITEM) {
-				Item dropped = (Item) e.getEntity();
-				ItemMeta droppedMeta = dropped.getItemStack().getItemMeta();
-				if(droppedMeta.hasLore() && droppedMeta.getLore().get(0).contains("Netherite Reinforced")) {
-					e.setCancelled(true);
-				}
-			}
+		if((e.getCause() == DamageCause.LAVA  || e.getCause() == DamageCause.FIRE) && e.getEntity() instanceof Item dropped) {
+			e.setCancelled(Util.getPersistentBool(dropped.getItemStack().getItemMeta(), armoredElytraKey));
 		}
 	}
 
 	@EventHandler
 	void onItemBurn(EntityCombustEvent e) {
-		if(e.getEntityType() == EntityType.ITEM) {
-			Item dropped = (Item) e.getEntity();
-			ItemMeta droppedMeta = dropped.getItemStack().getItemMeta();
-			if(droppedMeta.hasLore() && droppedMeta.getLore().get(0).contains("Netherite Reinforced")) {
-				e.setCancelled(true);
-			}
+		if(e.getEntity() instanceof Item dropped) {
+			e.setCancelled(Util.getPersistentBool(dropped.getItemStack().getItemMeta(), armoredElytraKey));
 		}
 	}
 
@@ -83,9 +72,10 @@ public class ArmoredElytra implements Listener {
 
 			AttributeModifier moreArmor = new AttributeModifier(armoredElytraKey, 7.0d, Operation.ADD_NUMBER, EquipmentSlotGroup.CHEST);
 			elytra.addAttributeModifier(Attribute.ARMOR, moreArmor);
-			elytra.setLore(List.of("§5Netherite Reinforced"));
+			Util.setPersistent(elytra, armoredElytraKey, true);
 			e.getResult().setItemMeta(elytra);
 
+			LoreUtil.addEntry("§5Netherite Reinforced",  e.getResult());
 		}
 
 	}

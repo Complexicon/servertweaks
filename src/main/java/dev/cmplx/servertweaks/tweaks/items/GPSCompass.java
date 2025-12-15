@@ -29,6 +29,7 @@ import dev.cmplx.servertweaks.InventoryGUI;
 import dev.cmplx.servertweaks.ItemStackBuilder;
 import dev.cmplx.servertweaks.Main;
 import dev.cmplx.servertweaks.Util;
+import dev.cmplx.servertweaks.i18n;
 import dev.cmplx.servertweaks.commands.DebugItemsCommand;
 import dev.cmplx.servertweaks.serializable.NamedLocation;
 import net.md_5.bungee.api.ChatMessageType;
@@ -94,7 +95,7 @@ public class GPSCompass implements Listener {
 				p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1.0f);
 			}
 
-			p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacy(Util.fixColor("&6"+ (int)dist + "m away from " + waypointName)));
+			p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacy(i18n.GPS_NAV_TEXT.fmt(i18n.param("meters", dist), i18n.param("waypoint", waypointName))));
 
 		}
 	}
