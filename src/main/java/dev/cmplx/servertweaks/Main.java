@@ -9,6 +9,7 @@ import org.bukkit.scoreboard.DisplaySlot;
 import dev.cmplx.servertweaks.tweaks.AnvilRename;
 import dev.cmplx.servertweaks.tweaks.CauldronConcrete;
 import dev.cmplx.servertweaks.tweaks.CraftingCustomizer;
+import dev.cmplx.servertweaks.tweaks.DeathCoords;
 import dev.cmplx.servertweaks.tweaks.DiscordIntegration;
 import dev.cmplx.servertweaks.tweaks.LeashableVillagers;
 import dev.cmplx.servertweaks.tweaks.LootGenerateHook;
@@ -98,6 +99,7 @@ public class Main extends JavaPlugin {
 		registerWhen(Config.soulboundBook, 		SoulboundEnchant.class);
 		registerWhen(Config.leashableVillagers, LeashableVillagers.class);
 		registerWhen(Config.refillableRocket, 	RefillableRocket.class);
+		registerWhen(Config.deathCoords, 		DeathCoords.class);
 
 		Log.info("Startup Complete");
 	}

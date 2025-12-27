@@ -20,6 +20,7 @@ public enum i18n {
 	ROCKET_CHARGES_REMAINING("&7Remaining Charges: {charges}"),
 	ITEM_REFILLABLE_ROCKET("&dRefillable Rocket"),
 	GPS_NAV_TEXT("&6{meters}m away from {waypoint}"),
+	DEATH_COORDS("&bYou died at X: {x} Y: {y} Z: {z} &7({world})"),
 
 	;/*
 	

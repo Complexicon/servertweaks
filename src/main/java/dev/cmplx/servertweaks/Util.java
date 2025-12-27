@@ -7,6 +7,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URI;
 import java.util.ArrayList;
@@ -46,8 +47,8 @@ import org.bukkit.scoreboard.Team;
 
 public class Util {
 
-	private static Object minecraftServer;
-	private static Field recentTps;
+	// private static Object minecraftServer;
+	private static Method recentTps;
 	private static Scoreboard globalScoreboard;
 
 	private static List<Field> configFields;
@@ -162,10 +163,11 @@ public class Util {
 	public static void init() {
 		Server server = Main.pluginRef.getServer();
 		try {
-			Field consoleField = server.getClass().getDeclaredField("console");
-			consoleField.setAccessible(true);
-			minecraftServer = consoleField.get(server);
-			recentTps = minecraftServer.getClass().getSuperclass().getDeclaredField("recentTps");
+			// Field consoleField = server.getClass().getDeclaredField("console");
+			// consoleField.setAccessible(true);
+			// minecraftServer = consoleField.get(server);
+			// recentTps = minecraftServer.getClass().getSuperclass().getDeclaredMethod("getTps");
+			recentTps = Bukkit.class.getDeclaredMethod("getTPS");
 			recentTps.setAccessible(true);
 		} catch (Exception e) {
 		}
@@ -212,7 +214,8 @@ public class Util {
 
 	public static double getTPSLastMin() {
 		try {
-			return ((double[]) recentTps.get(minecraftServer))[0];
+			//TODO: fixme
+			return ((double[]) recentTps.invoke(null))[0];
 		} catch (Exception e) {
 			return 0;
 		}

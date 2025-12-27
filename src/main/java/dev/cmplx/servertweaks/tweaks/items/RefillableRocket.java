@@ -118,16 +118,16 @@ public class RefillableRocket implements Listener {
 				e.setCancelled(true);
 				return;
 			}
-
-			if (p.getGameMode() != GameMode.CREATIVE) {
-				rocketItem.setAmount(2);
-			}
-
+			
 			var remaining = getCharge(rocketItem);
-
+			
 			if (remaining <= 0) {
 				e.setCancelled(true);
 				return;
+			}
+			
+			if (p.getGameMode() != GameMode.CREATIVE) {
+				rocketItem.setAmount(2);
 			}
 
 			setCharge(p, rocketItem, remaining - 1);
