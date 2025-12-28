@@ -14,6 +14,7 @@ import dev.cmplx.servertweaks.tweaks.DiscordIntegration;
 import dev.cmplx.servertweaks.tweaks.LeashableVillagers;
 import dev.cmplx.servertweaks.tweaks.LootGenerateHook;
 import dev.cmplx.servertweaks.tweaks.MultiplayerSleep;
+import dev.cmplx.servertweaks.tweaks.PerPlayerLoot;
 import dev.cmplx.servertweaks.tweaks.QuickOpen;
 import dev.cmplx.servertweaks.tweaks.RightClickHarvest;
 import dev.cmplx.servertweaks.tweaks.ToolStats;
@@ -100,6 +101,8 @@ public class Main extends JavaPlugin {
 		registerWhen(Config.leashableVillagers, LeashableVillagers.class);
 		registerWhen(Config.refillableRocket, 	RefillableRocket.class);
 		registerWhen(Config.deathCoords, 		DeathCoords.class);
+		
+		// registerWhen(Config.perPlayerLoot, 		PerPlayerLoot.class);
 
 		Log.info("Startup Complete");
 	}
