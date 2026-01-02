@@ -34,6 +34,7 @@ public class LoreUtil {
 		var match = currentLore.stream().filter(matcher).findFirst();
 		if (!match.isPresent()) {
 			addEntry(newText, of);
+			return;
 		}
 
 		currentLore.set(currentLore.indexOf(match.get()), newText);
