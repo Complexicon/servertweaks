@@ -32,7 +32,9 @@ public class LoreUtil {
 		var currentLore = meta.getLore();
 
 		var match = currentLore.stream().filter(matcher).findFirst();
-		if (!match.isPresent()) return;
+		if (!match.isPresent()) {
+			addEntry(newText, of);
+		}
 
 		currentLore.set(currentLore.indexOf(match.get()), newText);
 		meta.setLore(currentLore);

@@ -95,7 +95,7 @@ public class GPSCompass implements Listener {
 				p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1.0f);
 			}
 
-			p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacy(i18n.GPS_NAV_TEXT.fmt(i18n.param("meters", dist), i18n.param("waypoint", waypointName))));
+			p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacy(i18n.GPS_NAV_TEXT.fmt(i18n.param("meters", (int)dist), i18n.param("waypoint", waypointName))));
 
 		}
 	}
