@@ -108,6 +108,9 @@ public class ScheduleShutdown implements CommandExecutor, TabCompleter {
 			} catch (Exception e) {
 				sender.sendMessage(Util.fixColor("&4Couldn't parse duration '" + args[1] + "'"));
 			}
+		} else {
+			sender.sendMessage(Util.fixColor("&4Usage: /scheduleshutdown <time|countdown> <19:30 | 60s> <reasoning>"));
+			return true;
 		}
 
 		scheduleShutdown(countdown, Util.fixColor(args[2]));

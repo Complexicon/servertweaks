@@ -121,6 +121,8 @@ public class PlaytimeTracker implements Listener {
 		if (oldGamemode == GameMode.SPECTATOR) oldGamemode = GameMode.SURVIVAL; // afk stuck in spectator fix
 		p.setGameMode(oldGamemode != null ? oldGamemode : GameMode.SURVIVAL);
 
+		Util.modifyScore(afkTimer.getScore(p.getName()), val -> 0);
+
 		Bukkit.broadcastMessage(i18n.AFK_RETURN_MESSAGE.fmt(i18n.param("player", p.getName())));
 		String party = Util.getPersistentString(p, new NamespacedKey(Main.pluginRef, "party"));
 		if(party != null) {
@@ -129,10 +131,12 @@ public class PlaytimeTracker implements Listener {
 	}
 
 	private static void handlePlaytime(Player p) {
+
+		try {
 		
 		int afkTime = afkTimer.getScore(p.getName()).getScore();
 
-		if(afkTime == Config.afkTime - 1 && !Util.getPersistentBool(p, AfkCommand.stopAutoAFK)) {
+		if(!isAFK(p) && afkTime == Config.afkTime - 1 && !Util.getPersistentBool(p, AfkCommand.stopAutoAFK)) {
 			setAFK(p);
 		}
 
@@ -155,6 +159,10 @@ public class PlaytimeTracker implements Listener {
 			return oldVal + 1;
 		});
 
+		} catch (Exception e) {
+			Log.error(e.toString());
+			e.printStackTrace();
+		}
 	}
 
 	public static int getWeekPlaytime(Player p) {

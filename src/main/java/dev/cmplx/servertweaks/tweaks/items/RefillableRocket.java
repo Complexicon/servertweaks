@@ -159,6 +159,7 @@ public class RefillableRocket implements Listener {
 			return;
 
 		e.setResult(refillableRocket.clone());
+		e.getView().setRepairCost(0);
 	}
 
 }
