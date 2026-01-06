@@ -114,7 +114,7 @@ public class ScheduleShutdown implements CommandExecutor, TabCompleter {
 		}
 
 		scheduleShutdown(countdown, Util.fixColor(args[2]));
-		sender.sendMessage(Util.fixColor("&aScheduled Shutdown in " + Duration.ofSeconds(countdown).toString().substring(2).toLowerCase() + " seconds"));
+		sender.sendMessage(Util.fixColor("&aScheduled Shutdown in " + Duration.ofSeconds(countdown).toString().substring(2).toLowerCase()));
 
 		return true;
 	}

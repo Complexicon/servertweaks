@@ -9,9 +9,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.PlayerRespawnEvent.RespawnReason;
 import org.bukkit.inventory.ItemStack;
 
 import dev.cmplx.servertweaks.ItemStackBuilder;
+import dev.cmplx.servertweaks.Log;
 import dev.cmplx.servertweaks.Main;
 import dev.cmplx.servertweaks.Util;
 import dev.cmplx.servertweaks.commands.DebugItemsCommand;
@@ -65,6 +67,8 @@ public class SoulboundEnchant implements Listener {
 
 	@EventHandler
 	public void onPlayerRespawn(PlayerRespawnEvent e) {
+		if (e.getRespawnReason() != RespawnReason.DEATH) return; // prevent duping of soulbound items when going through end portal
+
 		@SuppressWarnings("unchecked")
 		var items = (ArrayList<ItemStack>) Util.getMetadata(e.getPlayer(), "soulboundItems", new ArrayList<ItemStack>().getClass());
 		if (items == null) return;
