@@ -13,7 +13,6 @@ import org.bukkit.event.player.PlayerRespawnEvent.RespawnReason;
 import org.bukkit.inventory.ItemStack;
 
 import dev.cmplx.servertweaks.ItemStackBuilder;
-import dev.cmplx.servertweaks.Log;
 import dev.cmplx.servertweaks.Main;
 import dev.cmplx.servertweaks.Util;
 import dev.cmplx.servertweaks.commands.DebugItemsCommand;

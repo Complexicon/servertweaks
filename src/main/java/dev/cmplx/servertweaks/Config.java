@@ -42,7 +42,11 @@ public class Config {
 	public static boolean soulboundBook = true;
 	public static boolean refillableRocket = true;
 	public static boolean deathCoords = true;
-	public static boolean perPlayerLoot = true;
+	// public static boolean perPlayerLoot = true; // experimental
+	public static boolean mapFromPicture = true;
+	// public static boolean elevatorBlock = true;
+	public static boolean preventCropTrample = true;
+	public static boolean fastLeafDecay = true;
 
 	public static int chanceTimberEnchant = 25;
 	public static int chanceSoulbound = 10;

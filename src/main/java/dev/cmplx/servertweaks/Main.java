@@ -9,8 +9,10 @@ import org.bukkit.scoreboard.DisplaySlot;
 import dev.cmplx.servertweaks.tweaks.AnvilRename;
 import dev.cmplx.servertweaks.tweaks.CauldronConcrete;
 import dev.cmplx.servertweaks.tweaks.CraftingCustomizer;
+import dev.cmplx.servertweaks.tweaks.CropTrample;
 import dev.cmplx.servertweaks.tweaks.DeathCoords;
 import dev.cmplx.servertweaks.tweaks.DiscordIntegration;
+import dev.cmplx.servertweaks.tweaks.FastLeafDecay;
 import dev.cmplx.servertweaks.tweaks.LeashableVillagers;
 import dev.cmplx.servertweaks.tweaks.LootGenerateHook;
 import dev.cmplx.servertweaks.tweaks.MultiplayerSleep;
@@ -20,6 +22,7 @@ import dev.cmplx.servertweaks.tweaks.RightClickHarvest;
 import dev.cmplx.servertweaks.tweaks.ToolStats;
 import dev.cmplx.servertweaks.tweaks.UnlockAll;
 import dev.cmplx.servertweaks.tweaks.blocks.DualDoor;
+import dev.cmplx.servertweaks.tweaks.blocks.Elevator;
 import dev.cmplx.servertweaks.tweaks.blocks.HopperFilter;
 import dev.cmplx.servertweaks.tweaks.blocks.Loadstone;
 import dev.cmplx.servertweaks.tweaks.blocks.LockableChest;
@@ -30,6 +33,7 @@ import dev.cmplx.servertweaks.tweaks.entities.MobGriefing;
 import dev.cmplx.servertweaks.tweaks.entities.SneakyMobs;
 import dev.cmplx.servertweaks.tweaks.entities.WanderingTraderModifier;
 import dev.cmplx.servertweaks.tweaks.items.ArmoredElytra;
+import dev.cmplx.servertweaks.tweaks.items.DebugStick;
 import dev.cmplx.servertweaks.tweaks.items.GPSCompass;
 import dev.cmplx.servertweaks.tweaks.items.RefillableRocket;
 import dev.cmplx.servertweaks.tweaks.items.SoulboundEnchant;
@@ -75,6 +79,7 @@ public class Main extends JavaPlugin {
 
 		// DEV
 		registerWhen(false, ConfigurableVillager.class);
+		registerWhen(true, 	DebugStick.class);
 
 		// optional events
 		registerWhen(true, WanderingTraderModifier.class); // handled internally
@@ -101,8 +106,10 @@ public class Main extends JavaPlugin {
 		registerWhen(Config.leashableVillagers, LeashableVillagers.class);
 		registerWhen(Config.refillableRocket, 	RefillableRocket.class);
 		registerWhen(Config.deathCoords, 		DeathCoords.class);
-		
 		// registerWhen(Config.perPlayerLoot, 		PerPlayerLoot.class);
+		// registerWhen(Config.elevatorBlock, 		Elevator.class);
+		registerWhen(Config.preventCropTrample, CropTrample.class);
+		registerWhen(Config.fastLeafDecay, 		FastLeafDecay.class);
 
 		Log.info("Startup Complete");
 	}

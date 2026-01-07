@@ -3,6 +3,7 @@ package dev.cmplx.servertweaks;
 import dev.cmplx.servertweaks.commands.AfkCommand;
 import dev.cmplx.servertweaks.commands.DebugItemsCommand;
 import dev.cmplx.servertweaks.commands.PartyCommand;
+import dev.cmplx.servertweaks.commands.PictureMap;
 import dev.cmplx.servertweaks.commands.PlaytimeCommand;
 import dev.cmplx.servertweaks.commands.ScheduleShutdown;
 import dev.cmplx.servertweaks.commands.TestCommand;
@@ -26,6 +27,7 @@ public class CommandManager {
 		plugin.getCommand("scheduleshutdown").setExecutor(scheduleShutdownCommand);
 		plugin.getCommand("scheduleshutdown").setTabCompleter(scheduleShutdownCommand);
 
+		if (Config.mapFromPicture) plugin.getCommand("picturemap").setExecutor(new PictureMap());
 	}
 
 }

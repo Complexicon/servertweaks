@@ -15,3 +15,5 @@ commands:
     description: "Schedules a server Shutdown"
   testcmd:
     description: ""
+  picturemap:
+    description: "Create Mapart from an URL"
