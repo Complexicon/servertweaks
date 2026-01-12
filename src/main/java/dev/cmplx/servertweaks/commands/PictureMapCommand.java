@@ -10,15 +10,12 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.meta.MapMeta;
-import org.bukkit.map.MapCanvas;
-import org.bukkit.map.MapRenderer;
-import org.bukkit.map.MapView;
-import org.bukkit.map.MapView.Scale;
 
+import dev.cmplx.servertweaks.Main;
 import dev.cmplx.servertweaks.Util;
+import dev.cmplx.servertweaks.tweaks.items.PictureMap;
 
-public class PictureMap implements CommandExecutor {
+public class PictureMapCommand implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -38,7 +35,7 @@ public class PictureMap implements CommandExecutor {
 		}
 
 		if (args.length != 1) {
-			sender.sendMessage("Usage: /picturemap <url>");
+			sender.sendMessage("Usage: /picturemap https://i.postimg.cc/<...>");
 			return true;
 		}
 
@@ -56,29 +53,31 @@ public class PictureMap implements CommandExecutor {
 				return true;
 			}
 
-			var image = ImageIO.read(url);
+			Bukkit.getScheduler().runTaskAsynchronously(Main.pluginRef, () -> {
+				try {
+					var image = ImageIO.read(url);
 
-			var view = Bukkit.createMap(p.getWorld());
-			view.setScale(Scale.FARTHEST);
-			
-			view.addRenderer(new MapRenderer() {
-				@Override
-				public void render(MapView map, MapCanvas canvas, Player player) {
-					canvas.drawImage(0, 0, image);
+					Bukkit.getScheduler().runTask(Main.pluginRef, () -> {
+						var newMap = PictureMap.createNewMap(p.getWorld(), image);
+						
+						if (newMap == null) {
+							sender.sendMessage(Util.fixColor("&cSomething went wrong!"));
+							return;
+						}
+
+						item.setAmount(item.getAmount() - 1);
+						p.getInventory().addItem(newMap);
+
+					});
+
+				} catch (Exception e) {
+					sender.sendMessage(Util.fixColor("&cSomething went wrong!"));
+					e.printStackTrace();
 				}
 			});
-			
-			item.setType(Material.FILLED_MAP);
-			var meta = (MapMeta) item.getItemMeta();
-
-			if (meta != null) {
-				meta.setMapView(view);
-				item.setItemMeta(meta);
-			}
 
 		} catch (Exception e) {
-			sender.sendMessage(Util.fixColor("&cSomething went wrong!"));
-			e.printStackTrace();
+			sender.sendMessage(Util.fixColor("&cMalformed URL!"));
 		}
 
 		return true;

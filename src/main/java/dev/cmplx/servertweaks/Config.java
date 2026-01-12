@@ -47,6 +47,7 @@ public class Config {
 	// public static boolean elevatorBlock = true;
 	public static boolean preventCropTrample = true;
 	public static boolean fastLeafDecay = true;
+	public static boolean librarianHelper = true;
 
 	public static int chanceTimberEnchant = 25;
 	public static int chanceSoulbound = 10;

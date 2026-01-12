@@ -29,12 +29,14 @@ import dev.cmplx.servertweaks.tweaks.blocks.LockableChest;
 import dev.cmplx.servertweaks.tweaks.blocks.TeleportAnchor;
 import dev.cmplx.servertweaks.tweaks.entities.ConfigurableVillager;
 import dev.cmplx.servertweaks.tweaks.entities.DoubleShulker;
+import dev.cmplx.servertweaks.tweaks.entities.LibrarianHelper;
 import dev.cmplx.servertweaks.tweaks.entities.MobGriefing;
 import dev.cmplx.servertweaks.tweaks.entities.SneakyMobs;
 import dev.cmplx.servertweaks.tweaks.entities.WanderingTraderModifier;
 import dev.cmplx.servertweaks.tweaks.items.ArmoredElytra;
 import dev.cmplx.servertweaks.tweaks.items.DebugStick;
 import dev.cmplx.servertweaks.tweaks.items.GPSCompass;
+import dev.cmplx.servertweaks.tweaks.items.PictureMap;
 import dev.cmplx.servertweaks.tweaks.items.RefillableRocket;
 import dev.cmplx.servertweaks.tweaks.items.SoulboundEnchant;
 import dev.cmplx.servertweaks.tweaks.items.TimberEnchant;
@@ -79,7 +81,7 @@ public class Main extends JavaPlugin {
 
 		// DEV
 		registerWhen(false, ConfigurableVillager.class);
-		registerWhen(true, 	DebugStick.class);
+		// registerWhen(true, 	DebugStick.class);
 
 		// optional events
 		registerWhen(true, WanderingTraderModifier.class); // handled internally
@@ -110,6 +112,8 @@ public class Main extends JavaPlugin {
 		// registerWhen(Config.elevatorBlock, 		Elevator.class);
 		registerWhen(Config.preventCropTrample, CropTrample.class);
 		registerWhen(Config.fastLeafDecay, 		FastLeafDecay.class);
+		registerWhen(Config.mapFromPicture, 	PictureMap.class);
+		registerWhen(Config.librarianHelper, 	LibrarianHelper.class);
 
 		Log.info("Startup Complete");
 	}

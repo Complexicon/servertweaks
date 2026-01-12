@@ -63,6 +63,9 @@ public class RefillableRocket implements Listener {
 		p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacy(newChargesLore));
 	}
 
+
+	// TODO: there is a method called Player#fireworkBoost(ItemStack rocket);
+
 	@EventHandler
 	void onRocketUse(PlayerInteractEvent e) {
 		if (e.getItem() == null)

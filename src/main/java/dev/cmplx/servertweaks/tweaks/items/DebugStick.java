@@ -22,7 +22,7 @@ public class DebugStick implements Listener {
 	static { DebugItemsCommand.DebugItems.add(debugStick); }
 
 	boolean isDebugStick(ItemStack i) {
-		if (i == null) return false;
+		if (i == null || !i.hasItemMeta()) return false;
 		return Util.getPersistentBool(i.getItemMeta(), debug_stick);
 	}
 
